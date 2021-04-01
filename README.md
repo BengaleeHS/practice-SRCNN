@@ -1,1 +1,1 @@
-# practice-srcnn
+# practice-SRCNN

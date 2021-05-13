@@ -83,7 +83,7 @@ Set5의 이미지 중 하나를 실행해 보았다. Bicubic에 비해 다른 �
 
 ![Bicubic x3](../.gitbook/assets/0_bic.png)
 
-![SRCNN\(9-5-5\) x3](../.gitbook/assets/0_out.png)
+![SRCNN\(9-5-5\) x3](../.gitbook/assets/0_out%20%281%29%20%282%29.png)
 
 MSE loss와 PSNR은 구현 결과다음과 같이 보여진다. Bicubic\(29.21 dB\)보다 높은 PSNR을 보인다. 최고 PSNR은 **30.25 dB**이다.
 

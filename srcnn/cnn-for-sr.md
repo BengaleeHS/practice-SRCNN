@@ -51,7 +51,7 @@ W3은 n2\*f3\*f3의 텐서에서 c 차원의 벡터로 변환한다. B3는 c차�
 
 ## Relationship with sparse-coding-based method
 
-![Fig. 3. An illustration of sparse-coding-based methods in the view of a convolutional neural network.](../.gitbook/assets/image%20%281%29.png)
+![Fig. 3. An illustration of sparse-coding-based methods in the view of a convolutional neural network.](../.gitbook/assets/image%20%281%29%20%281%29.png)
 
 논문에서 sparse coding based method을 CNN의 관점에서 볼 수 있다고 한다. dictionary의 개수가 $$n_1$$ 이라면, $$f_1 \times f_1$$ 크기의 패치를 추출해 선형 연산\(bias 포함\)을 통해 dictionary 공간으로 projection하는 것이 바로 sparse coding 방법이다. 이는 convolution 연산이 하는 과정과 동일하다는 것을 알 수 있다.
 

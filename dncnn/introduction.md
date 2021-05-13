@@ -21,7 +21,7 @@ NSS model은 이미지가 비국소적\(nonlocal\)으로 유사한 패턴을 가
 
 높은 성능에도 불구하고, image prior을 구하는 방법 두 가지 큰 단점이 있다. **첫째**, test 과정이 매우 복잡한 최적화 문제이므로 계산하는 데 시간이 오래 걸렸다. 컴퓨팅 효율이 좋지 않았다. **둘째**, non-convex이므로 최적화가 힘들며, 수동으로 파라미터를 조정해야 한다.
 
-이러한 prior 기반 접근의 한계를 극복하기 위해 image prior을 학습하기 위한 discriminative 방법이 몇 가지 개발되었다. 이러한 방법은 \(우리가 알고 있는 딥러닝 모델처럼\) test 과정에서 반복적인 작업이 없다. 이와 관련해 CSF method\(quadratic optimization 사용\), TNRD method 등이 등장했다.
+이러한 prior 기반 접근의 한계를 극복하기 위해 image prior을 학습하기 위한 discriminative 방법이 몇 가지 개발되었다. 이러한 방법은 \(우리가 알고 있는 딥러닝 모델처럼\) test 과정에서 반복적인 작업이 없다. 이와 관련해 CSF method\(quadratic optimization 사용\), TNRD method\(후에 비교할 것\) 등이 등장했다.
 
 ## Differences
 

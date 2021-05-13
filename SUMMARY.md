@@ -7,7 +7,7 @@
   * [Implemention](srcnn/implemention.md)
   * [Experiment](srcnn/experiment.md)
 * [DnCNN\(2016\)](dncnn/README.md)
-  * [DnCNN Model](dncnn/dncnn-model.md)
   * [Introduction](dncnn/introduction.md)
   * [Related Work](dncnn/related-work.md)
+  * [DnCNN Model](dncnn/dncnn-model.md)
 

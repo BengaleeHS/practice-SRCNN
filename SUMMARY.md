@@ -10,4 +10,6 @@
   * [Introduction](dncnn/introduction.md)
   * [Related Work](dncnn/related-work.md)
   * [DnCNN Model](dncnn/dncnn-model.md)
+  * [Experiment](dncnn/experiment.md)
+  * [Implemention - 구현](dncnn/implemention.md)
 

@@ -5,11 +5,11 @@
   * [Introduction](srcnn/introduction.md)
   * [CNN for SR](srcnn/cnn-for-sr.md)
   * [Experiment](srcnn/experiment.md)
-  * [Implementation - 구현](srcnn/implemention.md)
+  * [Implemention - 구현](srcnn/implemention.md)
 * [DnCNN\(2016\)](dncnn/README.md)
   * [Introduction](dncnn/introduction.md)
   * [Related Work](dncnn/related-work.md)
   * [DnCNN Model](dncnn/dncnn-model.md)
   * [Experiment](dncnn/experiment.md)
-  * [Implementation - 구현](dncnn/implemention.md)
+  * [Implemention - 구현](dncnn/implemention.md)
 

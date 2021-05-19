@@ -2,7 +2,7 @@
 description: PyTorch
 ---
 
-# Implemention - 구현
+# Implementation - 구현
 
 ## Model
 

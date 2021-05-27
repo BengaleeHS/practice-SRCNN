@@ -93,10 +93,10 @@ class TrainDataset(Dataset):
         t = transforms.ToTensor()(self.xs[index])
         if self.isBlind:
             x = t
-            y = (t + torch.randn(t.shape)*np.random.randint(self.sigma[0],self.sigma[1])/255.0).clamp(0.,1.)
+            y = (t + torch.randn(t.shape)*np.random.randint(self.sigma[0],self.sigma[1])/255.0)
         else:
             x = t
-            y = (t + torch.randn(t.shape)*self.sigma/255.0).clamp(0.,1.)
+            y = (t + torch.randn(t.shape)*self.sigma/255.0)
         return x, y
     
     def __len__(self):

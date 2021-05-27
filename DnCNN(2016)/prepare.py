@@ -98,19 +98,19 @@ class TrainDataset(Dataset):
         t = transforms.ToTensor()(self.xs[index])
         if self.isBlind:
             x = t
-            y = t + torch.randn(t.shape)*np.random.randint(self.sigma[0],self.sigma[1])/255.0
+            y = (t + torch.randn(t.shape)*np.random.randint(self.sigma[0],self.sigma[1])/255.0)
         else:
             x = t
-            y = t + torch.randn(t.shape)*self.sigma/255.0
+            y = (t + torch.randn(t.shape)*self.sigma/255.0)
         return x, y
     
     def __len__(self):
         return len(self.xs)
 
 class TestDataset(Dataset):
-    def __init__(self,path,noise_level) -> None:
+    def __init__(self,path,noise_level,convert = False) -> None:
         super(TestDataset, self).__init__()
-
+        self.convert = convert
         self.isBlind = type(noise_level)==list
         self.sigma = noise_level
 
@@ -118,14 +118,18 @@ class TestDataset(Dataset):
         self.paths.extend(glob.glob(path+'/*.jpg'))
 
     def __getitem__(self, index):
-        im = np.array(Image.open(self.paths[index]), dtype=np.uint8)
+        im = Image.open(self.paths[index])
+        if self.convert :
+            im = im.convert('L')
+        im = np.array(im, dtype=np.uint8)
         t = transforms.ToTensor()(im)
         if self.isBlind:
             x = t
-            y = t + torch.randn(t.shape)*np.random.randint(self.sigma[0],self.sigma[1])/255.0
+            y = (t + torch.randn(t.shape)*np.random.randint(self.sigma[0],self.sigma[1])/255.0)
+            torch.FloatTensor()
         else:
             x = t
-            y = t + torch.randn(t.shape)*self.sigma/255.0
+            y = (t + torch.randn(t.shape)*self.sigma/255.0)
         return x, y
     
     def __len__(self):

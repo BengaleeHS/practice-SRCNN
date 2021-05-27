@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch
 import multiprocessing as mp
 
-from utils import calc_psnr,calc_ssim
+from utils import calc_psnr,calc_ssim,conv_init
 from model import DnCNN
 from prepare import TrainDataset,TestDataset, prepare
 
@@ -16,11 +16,11 @@ DEVICE = torch.device("cuda" if USE_CUDA else "cpu")
 sigma = 25
 BATCH_SIZE = 128
 BATCH_COUNT = 1600
-EPOCHS = 80
+EPOCHS = 50
 
 #Paths
 train_path = './CImageNet400'
-test_path = './Set12'
+test_path = './CBSD68'
 checkpoint_path = './checkpoints/25'
 
 # DnCNN-S -> CImageNet400 / batchcount=1600 / patchsize=40
@@ -38,7 +38,7 @@ def train(model, loader, optimizer, scheduler, epoch):
 
         predict = model(y)
 
-        loss = F.mse_loss(predict, y-x)/2.
+        loss = F.mse_loss(predict, y-x,reduction='sum').div_(2.)
         train_loss+= loss.item()
         batch_loss+= loss.item()
         loss.backward()
@@ -59,47 +59,34 @@ def evalulate(model, loader, epoch):
         for x,y in loader:
             x,y = x.to(DEVICE), y.to(DEVICE)
             predict = model(y)
-            loss = F.mse_loss(predict, y-x)/2.
+            loss = F.mse_loss(predict, y-x,reduction='sum').div_(2.)
             test_loss += loss.to('cpu').item()
-            ssim += calc_ssim(y-predict, x)
-            psnr += calc_psnr(y-predict, x)
-        '''
-        #image plot
-        x,y = x.to('cpu'), y.to('cpu')
-        predict = predict.to('cpu')
-        
-        if epoch%10==0:
-            fig = plt.figure()
-            ax1=fig.add_subplot(3,1,1)
-            ax1.imshow(y[0].permute([1,2,0]),cmap='gray')
-            ax1=fig.add_subplot(3,1,2)
-            ax1.imshow(x[0].permute([1,2,0]),cmap='gray')
-            ax2=fig.add_subplot(3,1,3)
-            ax2.imshow((y[0]-predict[0]).permute([1,2,0]),cmap='gray')
-            plt.show()
-        '''
+            ssim += calc_ssim((y-predict), x)
+            psnr += calc_psnr((y-predict), x)
+
         n = len(loader)
         
         return test_loss/n, psnr/n, ssim/n
     
 if __name__=="__main__":
     mp.freeze_support()
-
+    torch.manual_seed(42)
+    np.random.seed(42)
     print("Loading Dataset...")
     train_dataset = TrainDataset(prepare(path=train_path,batch_size=BATCH_SIZE, batch_count=BATCH_COUNT, size=40, grayscale=True),sigma)
-    test_dataset = TestDataset(test_path,sigma)
+    test_dataset = TestDataset(test_path,sigma,convert=True)
 
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle = True, pin_memory=True, drop_last=True)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle = True, pin_memory=True, drop_last=True, num_workers=4)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, pin_memory=True)
     print("Dataset Prepared!")
 
     # model, optimizer, scheduler
     model = DnCNN()
+    model.apply(conv_init)
     model.to(DEVICE)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[20,40,60,80], gamma=0.4)
-
+    optimizer = torch.optim.Adam(model.parameters(), lr=(1e-3))
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30], gamma=0.1)
     # Continue Train
     max_epoch=0
     for p in glob.glob(checkpoint_path+'/*.pth'):

@@ -2,6 +2,8 @@
 
 ## Model Formulation
 
+### Architecture
+
 ```python
 class DnCNN(nn.Module):
     def __init__(self,channel=1,depth=17):
@@ -21,6 +23,10 @@ class DnCNN(nn.Module):
 ```
 
 d-2개의 Conv-BN-ReLU unit과 시작, 끝부분에 Conv를 두는 구조이다. forward는 noise를 deterministic하게 예측한다.
+
+### Parameter Initialization
+
+kaiming normal initialize한다. batch normalization의 초기화는 일반적인 normal dist로 초기화한다.
 
 ## Data Preparation
 

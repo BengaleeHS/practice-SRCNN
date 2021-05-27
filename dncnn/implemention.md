@@ -13,7 +13,7 @@ class DnCNN(nn.Module):
         L.append(nn.ReLU(inplace=True))
         for i in range(depth-2):
             L.append(nn.Conv2d(64,64,3,padding=1,bias=False))
-            L.append(nn.BatchNorm2d(64,eps=0.0001,momentum=0.95))
+            L.append(nn.BatchNorm2d(64)
             L.append(nn.ReLU(inplace=True))
         L.append(nn.Conv2d(64,channel,3,padding=1,bias=False))
         self.seq = nn.Sequential(*L)

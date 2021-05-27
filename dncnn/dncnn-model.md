@@ -26,7 +26,7 @@ $$
 
 ### Architecture
 
-![Fig. 1. The architecture of the proposed DnCNN network.](../.gitbook/assets/image%20%281%29%20%281%29.png)
+![Fig. 1. The architecture of the proposed DnCNN network.](../.gitbook/assets/image%20%281%29.png)
 
 | Layer \# | Construction | In/out channel |
 | :--- | :--- | :--- |
@@ -50,29 +50,11 @@ SGD에서 BN을 적용하지 않은 것이 잘 최적화되지 않는 반면, Ad
 
 ## Connection With TNRD
 
-DnCNN은 one-stage TNRD의 일반화로 설명할 수 있다. TNRD는 다음을 최적화하는 discriminitave 문제이다.
+TNRD는 다음을 최적화하는 discriminitave 문제이다.
 
 $$
 \min_{\mathbf{x}}\Psi({\bf {y-x}}) +\lambda\sum_{k=1}^{K}\sum_{p=1}^N\rho_k((\mathbf f_k*\mathbf x)_p)
 $$
 
-$$\lambda$$는 regularization, $$N$$은 이미지의 크기, $$\mathbf f_k$$는 k번째 컨볼루션 커널이며, $$\rho_k$$는 조정 가능한 k번째 패널티 함수이다. Gaussian denoising에선 $$\Psi({\bf {z}})=\frac12\|\mathbf z\|^2$$를 사용한다. 이 식에 대한 첫번째 gradient descent inference 식은
 
-$$
-\mathbf x_1=\mathbf y-\alpha\lambda\sum_{k=1}^{K}(\mathbf{\bar{f}}_k*\phi_k(\mathbf f_k*\mathbf y) )-\alpha \frac {\partial\Psi(\mathbf z)}{\partial \mathbf z}\biggr\rvert_{\mathbf{z=0}}
-$$
-
-가장 오른쪽 항은 0이므로, 
-
-$$
-\mathbf v_1=\mathbf y-\mathbf x_1=\alpha\lambda\sum_{k=1}^{K}(\mathbf{\bar{f}}_k*\phi_k(\mathbf f_k*\mathbf y) )
-$$
-
-y에 대한 x의 residual을 gradient descent로 예측하는 것이다. 그리고 위 식은 2 layer의 CNN과 실질적으로 같다. 여기서 $$\phi_k$$를 ReLU로 바꾸고 깊이를 늘리고 batch normalization을 사용하면 DnCNN이다. 위 식은 노이즈 레벨에 대한 정보가 없다. 임의의 레벨에 대해서 활용할 수 있다. 
-
-$$
-\frac {\partial\Psi(\mathbf z)}{\partial \mathbf z}\biggr\rvert_{\mathbf{z=0}}
-$$
-
-Gaussian distribution일때 위 식은 0이지만, 다른 분포에서도 0일 수 있다. 매우 많은 분포가 0과 같거나 가까운 기울기를 보인다. 따라서 SISR, JPEG 압축에도 사용할 수 있다.
 

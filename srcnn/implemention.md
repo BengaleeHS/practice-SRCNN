@@ -4,6 +4,8 @@ description: PyTorch
 
 # Implemention - 구현
 
+전체 코드와 결과는 [여기](https://github.com/BengaleeHS/practice-ai-paper/tree/main/SRCNN%282015%29)에 저장되어 있다.
+
 ## Model
 
 ```python
@@ -83,13 +85,11 @@ Set5의 이미지 중 하나를 실행해 보았다. Bicubic에 비해 다른 �
 
 ![Bicubic x3](../.gitbook/assets/0_bic.png)
 
-![SRCNN\(9-5-5\) x3](../.gitbook/assets/0_out%20%281%29%20%282%29%20%283%29.png)
+![SRCNN\(9-5-5\) x3](../.gitbook/assets/0_out%20%283%29.png)
 
 MSE loss와 PSNR은 구현 결과다음과 같이 보여진다. Bicubic\(29.21 dB\)보다 높은 PSNR을 보인다. 최고 PSNR은 **30.25 dB**이다.
 
 ![loss](../.gitbook/assets/losses.png)
 
 ![PSNR](../.gitbook/assets/psnr.png)
-
-전체 코드는 [https://github.com/BengaleeHS/practice-SRCNN](https://github.com/BengaleeHS/practice-SRCNN) 에 저장되어 있다.
 

@@ -22,5 +22,5 @@ Mini-Batch SGD는 CNN 최적화에 많이 사용되어왔다. 그러나 이 방�
 예를 들어, 강아지와 고양이를 구분하도록 만들었다고 하자. Test Data와 Train Data를 비교했을 때, 어떤 강아지와 고양이의 종이 Test Data에 빠져있다면 정확도가 떨어진다.
 {% endhint %}
 
-이뿐만 아니라, 각 layer의  input의 분포도 shift되어있기 때문에 문제가 발생한다고 주장하기도 한다. 이를 해결하기 위해 scale과 shift에 대한 parameter를 추가한다. 간단하며, 큰 learning rate를 사용할 수 있다.
+이뿐만 아니라, 각 layer의  input의 분포도 shift되어있기 때문에 문제가 발생한다고 주장하기도 한다. 이를 해결하기 위해 scale과 shift에 대한 parameter를 추가한다. 구조가 간단하며, 큰 learning rate를 사용할 수 있다.
 

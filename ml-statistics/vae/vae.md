@@ -1,2 +1,2 @@
-# VAE
+# Variational Auto-Encoder
 

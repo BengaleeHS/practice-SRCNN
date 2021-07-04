@@ -23,4 +23,8 @@
 * [VAE\(2013\)](ml-statistics/vae/README.md)
   * [Introduction](ml-statistics/vae/introduction.md)
   * [Problem Setting](ml-statistics/vae/problem-setting.md)
+  * [Method](ml-statistics/vae/method.md)
+  * [VAE](ml-statistics/vae/vae.md)
+  * [Experiments](ml-statistics/vae/experiments.md)
+  * [Implementation - 구현](ml-statistics/vae/implementation.md)
 

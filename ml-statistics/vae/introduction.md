@@ -10,7 +10,7 @@ $$
 
 이다. 분자는 결합확률 $$P(X,C)$$이다. $$P(C|X)$$를 사후확률\(posterior\),  $$P(C)$$를 사전확률\(prior\), $$P(X|C)$$를 가능도\(likelihood\), $$P(X)$$를 관측값\(evidence\)으로 부른다.
 
-나이브 베이즈 분류\([wiki](https://ko.wikipedia.org/wiki/%EB%82%98%EC%9D%B4%EB%B8%8C_%EB%B2%A0%EC%9D%B4%EC%A6%88_%EB%B6%84%EB%A5%98)\)를 생각하면, 어떤 클래스가 주어졌을 때 관측값 X의 각각의 n개의 특성들은 조건부 독립이므로, 
+나이브 베이즈 분류\([wiki](https://ko.wikipedia.org/wiki/%EB%82%98%EC%9D%B4%EB%B8%8C_%EB%B2%A0%EC%9D%B4%EC%A6%88_%EB%B6%84%EB%A5%98)\)를 생각하면, 어떤 클래스가 주어졌을 때 관측값 X의 각각의 n개의 특성들은 조건부 독립으로 가정하므로, 
 
 $$
 P(X,C)=P(C)\prod^n_{i=1}P(X_i|C)

@@ -22,4 +22,5 @@
 
 * [VAE\(2013\)](ml-statistics/vae/README.md)
   * [Introduction](ml-statistics/vae/introduction.md)
+  * [Method](ml-statistics/vae/method.md)
 

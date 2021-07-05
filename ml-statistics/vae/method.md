@@ -72,6 +72,8 @@ $$p_{\bm \theta}(\bold z)$$는 분포를 가정해 정할 수 있고, $$q_{\bm \
 
 ## Stochastic Gradient VB estimator & Auto-Encoding VB
 
+여기선, lower bound를 실용적 최적화할 수 있는 estimator를 소개한다.
+
 ## Reparameterization Trick
 
 

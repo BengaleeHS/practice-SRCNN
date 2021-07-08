@@ -72,7 +72,15 @@ $$p_{\bm \theta}(\bold z)$$는 분포를 가정해 정할 수 있고, $$q_{\bm \
 
 ## Stochastic Gradient VB estimator & Auto-Encoding VB
 
-여기선, lower bound를 실용적 최적화할 수 있는 estimator를 소개한다.
+Lower bound를 잘 최적화할 수 있는 실용적 estimator를 소개한다. $$q_{\bm \phi}(\bold z|\bold x)$$를 최적화하지만, $$q_{\bm \phi}(\bold z)$$에도 적용할 수 있다. Gradient descent를 이용하기 위해선 loss를 미분해 인코더까지 backpropagation 되어야 하므로 미분 가능해야한다. 하지만  인코더는 $$\bold{\tilde z}\sim q_{\bm \phi}(\bold z|\bold x)$$z를 분포에서 하나 샘플링하는 과정이기에 미분 불가능하므로, 연쇄법칙이 이 과정에서 깨져 인코더에 GD를 사용할 수 없다.
+
+따라서, 미분가능한 함수인 $$g_{\bm \phi}(\bm \epsilon,\mathbf x)$$를 이용해 reparameterize\(재매개화\)한다. $$\bm \epsilon$$는 노이즈에 대한 변수이며 결론적으로
+
+$$
+\bold{\tilde z}\sim g_{\bm \phi}(\bm \epsilon,\mathbf x), \quad \bm \epsilon\sim p(\bm \epsilon)
+$$
+
+로 재매개화한다. $$p(\bm \epsilon)$$는 노이즈에 대한 적절한 확률분포이다. 
 
 ## Reparameterization Trick
 

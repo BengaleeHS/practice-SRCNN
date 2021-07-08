@@ -63,7 +63,7 @@ $$
 논문에 나온 것처럼, 기댓값 형태로 바꾸면 다음과 같다.
 
 $$
-\log(p_{\bm \theta}(\bold x))\ge \mathbf E_{\mathbf z\sim q_{\bm \phi}(\bold z|\bold x)}[p_{\bm \theta}(\bold x|\bold z)]-D_{KL}(q_{\bm \phi}(\bold z|\bold x)||p_{\bm \theta}(\bold z))
+\log(p_{\bm \theta}(\bold x))\ge \mathbb E_{\mathbf z\sim q_{\bm \phi}(\bold z|\bold x)}[p_{\bm \theta}(\bold x|\bold z)]-D_{KL}(q_{\bm \phi}(\bold z|\bold x)||p_{\bm \theta}(\bold z))
 $$
 
 $$p_{\bm \theta}(\bold z)$$는 분포를 가정해 정할 수 있고, $$q_{\bm \phi}(\bold z|\bold x)$$근사시킨 인코더, $$p_{\bm \theta}(\bold x|\bold z)$$는 학습시킬 디코더이므로 모두 계산 가능하다\(tractable\). 따라서 이를 미분해 $$\bm \theta$$와 $$\bm \phi$$를 모두 업데이트하면 된다.
@@ -72,15 +72,21 @@ $$p_{\bm \theta}(\bold z)$$는 분포를 가정해 정할 수 있고, $$q_{\bm \
 
 ## Stochastic Gradient VB estimator & Auto-Encoding VB
 
-Lower bound를 잘 최적화할 수 있는 실용적 estimator를 소개한다. $$q_{\bm \phi}(\bold z|\bold x)$$를 최적화하지만, $$q_{\bm \phi}(\bold z)$$에도 적용할 수 있다. Gradient descent를 이용하기 위해선 loss를 미분해 인코더까지 backpropagation 되어야 하므로 미분 가능해야한다. 하지만  인코더는 $$\bold{\tilde z}\sim q_{\bm \phi}(\bold z|\bold x)$$z를 분포에서 하나 샘플링하는 과정이기에 미분 불가능하므로, 연쇄법칙이 이 과정에서 깨져 인코더에 GD를 사용할 수 없다.
+Lower bound를 잘 최적화할 수 있는 실용적 estimator를 소개한다. $$q_{\bm \phi}(\bold z|\bold x)$$를 최적화하지만, $$q_{\bm \phi}(\bold z)$$에도 적용할 수 있다. Gradient descent를 이용하기 위해선 loss를 미분해 인코더까지 backpropagation 되어야 하므로 미분 가능해야한다. 하지만  인코더는 $$\bold{\tilde z}\sim q_{\bm \phi}(\bold z|\bold x)$$z를 분포에서 하나 샘플링하는 과정이기에 미분 불가능하므로\(등식\(=\)이 아니므로 미분 불가능\), **연쇄법칙이 이 과정에서 깨져 인코더에 GD를 사용할 수 없다.**
 
 따라서, 미분가능한 함수인 $$g_{\bm \phi}(\bm \epsilon,\mathbf x)$$를 이용해 reparameterize\(재매개화\)한다. $$\bm \epsilon$$는 노이즈에 대한 변수이며 결론적으로
 
 $$
-\bold{\tilde z}\sim g_{\bm \phi}(\bm \epsilon,\mathbf x), \quad \bm \epsilon\sim p(\bm \epsilon)
+\bold{\tilde z}=g_{\bm \phi}(\bm \epsilon,\mathbf x), \quad \bm \epsilon\sim p(\bm \epsilon)
 $$
 
-로 재매개화한다. $$p(\bm \epsilon)$$는 노이즈에 대한 적절한 확률분포이다. 
+로 재매개화한다. $$p(\bm \epsilon)$$는 노이즈에 대한 적절한 확률분포이다. z를 함수로 두고 노이즈만 다른 분포에서 뽑는 편법이다. 등식이 되므로 **미분 가능해진다.** 이를 이용한 Monte Carlo 기댓값 estimator는 다음과 같다.
+
+$$
+\mathbb E_{q_{\bm \phi}(\bold z|\bold x^{(i)})}[f(\bold z)] = \mathbb E_{p(\bm\epsilon)}[f(g_{\bm \phi}(\bm \epsilon,\mathbf x^{(i)}))]\simeq \frac 1 L \sum_{l=0}^{L}f(g_{\bm \phi}(\bm \epsilon^{(l)},\mathbf x^{(i)}))
+$$
+
+Monte Carlo expectation으로 pi값을 구하는 과정을 본 적이 있을 것이다. 이와 같이, $$\bm \epsilon^{(l)}$$를 많이 샘플링할수록 실제 기댓값에 가까워질것이다. 기존엔 고차원 분포인 z를 샘플링해야했기 때문에 분산이 너무 증가해 효율적이지 않았으나, reparameterization을 통해 **분산을 줄일 수 있다**. 알고 있는 분포 하나에서 샘플링하기 때문이다.
 
 ## Reparameterization Trick
 

@@ -25,6 +25,6 @@
   * [Problem Setting](ml-statistics/vae/problem-setting.md)
   * [Method](ml-statistics/vae/method.md)
   * [Variational Auto-Encoder](ml-statistics/vae/vae.md)
-  * [Experiments](ml-statistics/vae/experiments.md)
   * [Implementation - 구현](ml-statistics/vae/implementation.md)
+  * [Appendix - KL Divergence 적분](ml-statistics/vae/appendix-kl-divergence.md)
 

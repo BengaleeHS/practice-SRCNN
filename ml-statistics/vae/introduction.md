@@ -67,6 +67,6 @@ IID\(서로 독립이고 모두 같은 분포를 가지는 확률변수들\)인 
 VAE는 
 
 * 복잡한 분포를 가진 posterior을 근사하고, lower bound를 올려 최적화하기 위해 Gradient descent를 사용할 수 있도록 만들었다\(Variational\).
-* 이를 학습시키기 위해, encoder-decoder 를 사용하는 Auto-Encoder와 유사한 구조를 가진다.
-* 결국 연속 잠재 변수가 존재하면서, 다루기 힘든 posterior가 있을 때도 효율적으로 최적화\(GD\)/추론\(Ancestral Sampling\)할 수 있다.
+* 이를 학습시키기 위한 encoder-decoder 를 사용하는 Auto-Encoder와 유사한 구조를 가진다.
+* 연속 잠재 변수 가 존재하면서, 다루기 힘든 posterior가 있을 때도 효율적으로 최적화\(GD\)/추론\(Ancestral Sampling\)할 수 있다.
 

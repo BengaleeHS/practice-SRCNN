@@ -1,16 +1,16 @@
 # Variational Auto-Encoder
 
-앞의 Method 부분에서 증명하고 정당화한 AEVB\(Auto-Encoding Variational Bayes\)를 사용한 **Variational Auto-Encoder**의 **예시**를 들어본다. 다양한 형태의 AEVB가 있을 수 있다.
+앞의 Method 부분에서 증명하고 정당화한 AEVB\(Auto-Encoding Variational Bayes\)를 사용한 **Variational Auto-Encoder**의 **예시**를 들어본다. 이 외에도 다양한 형태의 AEVB가 있을 수 있다.
 
 ## 분포 설정하기
 
-prior에 대해 다음과 같이 isotropic multivariate gaussian으로 두자. 
+prior에 대해 다음과 같이 isotropic multivariate gaussian으로 가정하자. 
 
 $$
 p_{\bm \theta}(\bold z)=\mathcal N(\bold z;\bold 0, \bold I)
 $$
 
-이렇게 단순한 형태의 단일 분포로 가정할 경우 파라미터가 너무 적으나, 디코더가 충분히 깊은 MLP이므로 파라미터 부족을 해결할 수 있다. 디코더인 $$p_{\bm \theta}(\bold x|\bold z)$$는 $$\bold z$$ 로부터 $$\bold x$$ 를 생성하고, 출력 형태에 따라 multivariate gaussian, bernoulli 등의 분포를 가진다.
+이렇게 단순한 형태의 단일 분포로 가정할 경우 파라미터가 너무 적으나, 디코더가 충분히 깊은 MLP이므로 파라미터 부족을 해결할 수 있다. 디코더 확률분포인 $$p_{\bm \theta}(\bold x|\bold z)$$는 $$\bold z$$ 로부터 $$\bold x$$ 를 생성할 수 있고, 출력 형태에 따라 multivariate gaussian, bernoulli 등의 분포를 가진다.
 
 {% hint style="info" %}
 Multivariate Gaussian은 정규분포이지만 평균과 분산을 벡터로 가지는 다변량 정규분포이며 실수값을 가지는 출력 분포를 표현할 수 있다.
@@ -62,5 +62,5 @@ $$
 
 인코더에서 출력된 $$\bold z$$의 평균과 분산 벡터, 출력된 $$\bold z$$에 대해 디코더에서 올바른 데이터 $$x^{(i)}$$가 나타날 가능도\(cross entropy loss\)를 이용하면 estimator를 계산할 수 있다. 이를 미분/역전파해 최적화하는 것이 Variational Auto-Encoder이다.
 
-학습 후에는 $$\bold z$$ 벡터를 입력해 샘플을 올바르게 생성할 수 있다. 이로써 디코더 $$p_{\bm \theta}(\bold x|\bold z)$$를 구하는 문제를 해결한다.
+파라미터 학습 후에는 $$\bold z$$ 벡터를 입력해 샘플을 올바르게 생성할 수 있다. 이로써 디코더 $$p_{\bm \theta}(\bold x|\bold z)$$를 구하는 문제를 해결한다. [다음 챕터](implementation.md)의 코드를 보면 더욱 직관적으로 VAE를 이해할 수 있다.
 

@@ -54,7 +54,7 @@ Variational Bayesian 방법은 계산하기 어려운 분포를 근사해 다룰
 
 Abstract에 나타난 두 번째 목표에 해당한다.
 
-IID\(서로 독립이고 모두 같은 분포를 가지는 확률변수들\)인 데이터셋과 각 데이터 하나하나에 대해 잠재 변수가 있는 경우에 대해 Auto-Encoding Variational Bayes\(AEVB\) 방법을 논문에서 제안한다. AEVB는 SGD로 최적화 가능한 Variational Bayes\(SGVB\) 추정량\(모델 파라미터의 추정 방법이라고 생각하자\)을 사용함으로써 학습이 용이하고 ancestral sampling을 통해 새로운 샘플을 생성하는 추론도 효율적으로 할 수 있다. 
+IID\(서로 독립이고 모두 같은 분포를 가지는 확률변수들\)인 데이터셋과 각 데이터 하나하나에 대해 잠재 변수가 있는 경우에 대해 Auto-Encoding Variational Bayes\(AEVB\) 방법을 논문에서 제안한다. AEVB는 SGD로 최적화 가능한 Variational Bayes\(SGVB\) 추정량\(모델 파라미터의 추정 방법이라고 생각하자\)을 사용함으로써 학습이 용이하고 ancestral sampling을 통해 **새로운 샘플을 생성하는 추론도 효율적으로 할 수 있다.** 
 
 {% hint style="info" %}
 위에서 보았듯, Ancestral Sampling이란 유향 비순환 그래프\(DAG\)로 나타내어지는 베이지안 네트워크에서 확률변수를 순서대로 샘플링해 새로운 샘플을 생성하는 과정이다.
@@ -68,5 +68,10 @@ VAE는
 
 * 복잡한 분포를 가진 posterior을 근사하고, lower bound를 올려 최적화하기 위해 Gradient descent를 사용할 수 있도록 만들었다\(Variational\).
 * 이를 학습시키기 위한 encoder-decoder 를 사용하는 Auto-Encoder와 유사한 구조를 가진다.
-* 연속 잠재 변수 가 존재하면서, 다루기 힘든 posterior가 있을 때도 효율적으로 최적화\(GD\)/추론\(Ancestral Sampling\)할 수 있다.
+* 연속 잠재 변수가 존재하면서 다루기 힘든 posterior가 있을 때도, 효율적으로 최적화\(GD\)/추론\(Ancestral Sampling, 샘플생성\)할 수 있다.
+
+**다시 말해, VAE를 성공적으로 최적화하면 \(잠재변수에서 데이터가 유래했다는 가정에서\)**
+
+1. **생성 모델로서 새로운 샘플을 생성할 수 있다.**
+2. **잠재변수를 조절함으로써 샘플 생성을 조절할 수 있다.**
 

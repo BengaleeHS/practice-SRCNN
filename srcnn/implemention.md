@@ -2,7 +2,7 @@
 description: PyTorch
 ---
 
-# Implemention - 구현
+# Implementation - 구현
 
 전체 코드와 결과는 [여기](https://github.com/BengaleeHS/practice-ai-paper/tree/main/SRCNN%282015%29)에 저장되어 있다.
 

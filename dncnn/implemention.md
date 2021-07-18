@@ -1,4 +1,8 @@
-# Implemention - 구현
+---
+description: PyTorch
+---
+
+# Implementation - 구현
 
 전체 코드와 결과는 [여기](https://github.com/BengaleeHS/practice-ai-paper/tree/main/DnCNN%282016%29)에 저장되어 있다.
 
@@ -126,5 +130,5 @@ Test Data에 대한 epoch에 따른 평균 PSNR의 곡선은 위와 같이 나�
 
 ![&#xB178;&#xC774;&#xC988; &#xCD94;&#xAC00; &#xD6C4; &#xBCF5;&#xC6D0;&#xD55C; &#xC774;&#xBBF8;&#xC9C0;](../.gitbook/assets/49_out%20%281%29.png)
 
-DnCNN의 출력 이미지를 보면, 분명 노이즈를 제거하나 이미지 본래의 자글자글한 부분까지 노이즈로 인식해 패턴을 없애버린다. 나무의 풀잎, 모래 부분을 보면 내부의 무늬가 감소함을 알 수 있다. **MSE loss는 인간의 시각적 인식을 그대로 반영하지 않기 때문에**, loss function에 SSIM 항을 추가하는 방법도 존재한다.
+DnCNN의 출력 이미지를 보면, 분명 노이즈를 제거하나 이미지 본래의 자글자글한 부분의 패턴이 사라진다. 나무의 풀잎, 모래 부분을 보면 내부의 무늬가 감소함을 알 수 있다. **MSE loss는 이미지 전체에 대해 오차를 평균내므로 '평균적으로' loss가 작으면 그만이다. 따라서 인간의 시각적 인식을 그대로 반영하지 않기 때문에,** loss function에 SSIM 항을 추가하는 방법도 존재한다.
 

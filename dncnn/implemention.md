@@ -118,7 +118,7 @@ CImageNet400을 grayscale로 변환한 이미지를 crop해 Train data로 사용
 Batch size는 128, 총 배치 수는 1600개이며 50 epoch 학습한다.   
 Optimizer는 Adam이고 **learning rate를 1e-3으로 하되, 30epoch에서 1e-4로** 스케줄링한다.
 
-![PSNR](../.gitbook/assets/avg_psnr%20%282%29.png)
+![PSNR](../.gitbook/assets/avg_psnr%20%281%29.png)
 
 Test Data에 대한 epoch에 따른 평균 PSNR의 곡선은 위와 같이 나타나며, 논문의 29.2까지 도달하지는 못했으나 29.02dB를 기록했다.
 

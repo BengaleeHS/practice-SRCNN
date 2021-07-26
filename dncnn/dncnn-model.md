@@ -26,7 +26,7 @@ $$
 
 ### Architecture
 
-![Fig. 1. The architecture of the proposed DnCNN network.](../.gitbook/assets/image%20%281%29%20%281%29.png)
+![Fig. 1. The architecture of the proposed DnCNN network.](../.gitbook/assets/image%20%281%29%20%281%29%20%281%29.png)
 
 | Layer \# | Construction | In/out channel |
 | :--- | :--- | :--- |

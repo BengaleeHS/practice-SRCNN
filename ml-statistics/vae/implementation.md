@@ -40,46 +40,74 @@ AEVB / SGVB를 적용한 Variational Autoencoder를 구현한다.
 
 ConvTranspose2d로 차원\(28x28\)을 맟출 수 없었기에 최종적으로 Conv2d를 한번 더 해준다. 
 
-모델 클래스의 코드는 다음과 같다.
+모델 클래스의 코드는 다음과 같다. 21/07/26 수정, 모델을 더 유연하게 변환했다.
 
 ```python
 class ConvVAE(nn.Module):
-    def __init__(self,latent_dim):
+    def __init__(self,input_size, channels, kernel_size=3, stride=2, latent_dim=2):
         super(ConvVAE,self).__init__()
+        self.DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.latent_dim=latent_dim
-        
-        self.conv1 = nn.Conv2d(1,32,3,2,1) #28->14 
-        self.conv2 = nn.Conv2d(32,64,3,2,1) #14->7
-        self.linear1mean = nn.Linear(7*7*64,latent_dim) #7*7*64 -> mu
-        self.linear1logvar = nn.Linear(7*7*64,latent_dim) #7*7*64 -> logvar
 
-        self.linear2 = nn.Linear(latent_dim, 7*7*64) #z -> 7*7*64
-        self.deconv1 = nn.ConvTranspose2d(64,64,3,2) #7 -> 15
-        self.deconv2 = nn.ConvTranspose2d(64,32,3,2) #31
-        self.conv3 = nn.Conv2d(32,1,4,1) #31->28
+        last_channel = channels[0]
+        last_size = input_size
+
+        enc = []
+        #conv size calc
+        convcalc = lambda h,k,s,p: math.floor(((h+2*p-k)/s+1)) 
+
+        for c in channels[1:]:
+            enc.append(nn.Conv2d(last_channel,c,kernel_size,stride=stride,padding=1))
+            enc.append(nn.ReLU())
+            last_channel=c
+            last_size = convcalc(last_size,kernel_size,stride,1)
+
+        enc.append(nn.Flatten())
+        enc.append(nn.Linear(last_size*last_size*channels[-1],latent_dim*2))
+
+        self.seq_enc = nn.Sequential(*enc)
+
+        channels.reverse()
+        dec = [nn.Linear(latent_dim, last_size*last_size*channels[0]),
+                nn.ReLU(),
+                nn.Unflatten(1,(64,7,7)),
+                nn.ConvTranspose2d(channels[0],channels[0],kernel_size,stride),
+                nn.ReLU(),]
+
+        deconvcalc = lambda h,k,s,p : (h-1)*s-2*p+k
+
+        last_size = deconvcalc(last_size,kernel_size,stride,0)
+        last_channel = channels[0]
+
+        for c in channels[1:-1]:
+            dec.append(nn.ConvTranspose2d(last_channel,c,kernel_size,stride))
+            dec.append(nn.ReLU())
+            last_channel=c
+            last_size = deconvcalc(last_size,kernel_size,stride,0)
+
+        if(last_size>=input_size):
+            dec.append(nn.Conv2d(channels[-2], channels[-1], last_size-input_size+1, 1))
+        elif(last_size<input_size):
+            dec.append(nn.ConvTranspose2d(channels[-2], channels[-1], input_size-last_size+1, 1))
+        
+        dec.append(nn.Sigmoid())
+
+        self.seq_dec = nn.Sequential(*dec)
 
 
     def encoder(self,x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = x.view(-1,7*7*64)
-        mean = self.linear1mean(x)
-        logvar = self.linear1logvar(x)
-        
+        x = self.seq_enc(x)
+        mean = x[:,0:self.latent_dim]
+        logvar = x[:,self.latent_dim:self.latent_dim*2]
         return mean, logvar
     
     def decoder(self,z):
-        z = F.relu(self.linear2(z))
-        z = z.view(-1,64,7,7)
-        z = F.relu(self.deconv1(z))
-        z = F.relu(self.deconv2(z))
-        z = F.sigmoid(self.conv3(z))
-        
-        return z
+        xhat = self.seq_dec(z)
+        return xhat
 
     def sample(self,mean,logvar):
         #epsilon ~ N(O,I)
-        eps = torch.randn_like(mean) .to('cuda')
+        eps = torch.randn_like(mean).to(self.DEVICE)
         return mean+torch.exp(0.5*logvar)*eps
     
     def forward(self,x):
@@ -199,19 +227,19 @@ print(test_losses)
 
 잠재변수가 두 개의 실수일 때 결과이다.
 
-![Learning Curve](../../.gitbook/assets/learning%20%281%29.png)
+![Z\_DIM=2 loss ](../../.gitbook/assets/loss%20%281%29.png)
 
 과적합 이전에 적절히 멈추었다.
 
 시각화 결과,
 
-![Z\_DIM=2 Scatter](../../.gitbook/assets/scatters.png)
+![Z-DIM=2 &#xBD84;&#xC0B0;](../../.gitbook/assets/scatter.png)
 
 점이 0 주변에 올바르게 분포해 했으나, 일부 숫자는 잘 분리되지 않았다.
 
 100개를 Train Data에서 뽑아 적절히 생성했다. 결과, 다음과 같은 숫자가 생성되었다.
 
-![&#xCD9C;&#xB825; &#xACB0;&#xACFC;](../../.gitbook/assets/image%20%284%29.png)
+![Z\_DIM=2 &#xC22B;&#xC790; &#xCD9C;&#xB825;](../../.gitbook/assets/image%20%281%29.png)
 
 생성된 숫자가 애매하게 보이는 것이 많고, 압축  및 복원 과정에서 어려움이 있었다.
 
@@ -219,17 +247,19 @@ print(test_losses)
 
 잠재 변수가 4개의 실수일 때 결과이다.
 
-![Learning Curve](../../.gitbook/assets/learning.png)
+![Z\_DIM=4 loss](../../.gitbook/assets/loss.png)
 
 Z\_DIM=2에서보다 더 낮은  Loss를 보였다!
 
-![Z\_DIM=4 Scatter](../../.gitbook/assets/scatter0123.png)
+4차원이므로 시각화가 까다롭다. 따라서 T-SNE를 이용해 차원축소했다.
 
-4차원이므로 시각화가 까다롭다. 따라서 두 plot으로 나누었다. 차원이 높으므로 조금 더 분리될 가능성이 높을 것이다.
+![](../../.gitbook/assets/tsne.png)
+
+각 숫자가 더욱 잘 모여있는 것으로 보인다. 
+
+![Z\_DIM=4 &#xC22B;&#xC790; &#xCD9C;&#xB825;](../../.gitbook/assets/image.png)
 
 생성된 이미지들은 실제로 더 또렷한 숫자들로 보였으며, 0부터 9까지 각각 또렷하게 보이는 숫자들이 적어도 하나씩 존재했다. 더 잘 최적화되었다.
-
-![](../../.gitbook/assets/image%20%286%29.png)
 
 
 

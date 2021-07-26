@@ -28,3 +28,5 @@
   * [Implementation - 구현](ml-statistics/vae/implementation.md)
   * [Appendix - KL Divergence 적분](ml-statistics/vae/appendix-kl-divergence.md)
 
+## Personal Project
+

@@ -39,7 +39,7 @@ $$\bm \theta$$를최적화하는 다양한 방법이 있지만 다음 두 걸림
 
 ## 이해가 안가요😭
 
-![&#xBB38;&#xC81C; &#xC124;&#xC815;&#xC5D0; &#xB300;&#xD55C; Graphical Probabilistic Model](../../.gitbook/assets/image%20%283%29.png)
+![&#xBB38;&#xC81C; &#xC124;&#xC815;&#xC5D0; &#xB300;&#xD55C; Graphical Probabilistic Model](../../.gitbook/assets/image%20%283%29%20%281%29.png)
 
 * 칠해진 노드인$$\bold x$$는 우리가 관측 가능한 데이터이다.
 * 실선 화살표 부분은 잠재변수 $$\bold z$$로부터 $$p_{\bm \theta}(\bold x|\bold z)$$에 의해 확률적으로 데이터$$\bold x$$가 생성되는 상황을 말한다. 그리고 우리는 이 과정을 가깝게 알아내 샘플을 생성하고 싶다.

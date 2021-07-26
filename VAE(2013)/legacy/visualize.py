@@ -7,11 +7,10 @@ from matplotlib import pyplot as plt
 from torchvision import datasets,transforms
 from torchvision.utils import Image
 from model import ConvVAE
-from sklearn.manifold import TSNE
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-Z_DIM = 4
+Z_DIM = 2
 
 transform = transforms.Compose([transforms.ToTensor()])
 
@@ -19,8 +18,8 @@ test_dataset = datasets.MNIST('./',train=False,transform=transform)
 
 test_loader = torch.utils.data.DataLoader(test_dataset,batch_size=2000,shuffle=True,pin_memory=True)
 
-model = ConvVAE(input_size=28,channels=[1,32,64],latent_dim=Z_DIM)
-model.load_state_dict(torch.load(f'./checkpoint/{Z_DIM}/check50.pt'))
+model = ConvVAE(Z_DIM)
+model.load_state_dict(torch.load('./checkpoint/check50.pt'))
 model.to(DEVICE)
 
 def latent(model, loader):
@@ -47,30 +46,9 @@ def latent(model, loader):
         print(xhat[0].shape)
         for i in range(100):
             a = Image.fromarray(xhat[i])
-            a.save(f'./images/{Z_DIM}/{i}.png')
-        break
-
-def compress(model,loader):
-    model.eval()
-    for idx, (x,label) in enumerate(loader):
-        x = x.to(DEVICE)
-        with torch.no_grad():
-            mean,logvar = model.encoder(x)
-            z = model.sample(mean,logvar)
-            xhat = model.decoder(z)
-            z=z.to('cpu')
-            xhat=xhat.to('cpu')
-        z = z.numpy()
-        label = label.numpy()
-        tsnemodel = TSNE(n_components=2)
-        z = tsnemodel.fit_transform(z)
-        plt.title("T-SNE Compressed(z_dim=4)")
-        plt.scatter(z[:,0],z[:,1],s=10,c=label,cmap=plt.cm.get_cmap('rainbow',10))
-        plt.colorbar(ticks=range(10),label='label')
-        plt.show()
+            a.save(f'./images/2/{i}.png')
         break
 
 latent(model,test_loader)
-compress(model,test_loader)
 
             

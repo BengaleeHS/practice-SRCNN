@@ -11,7 +11,6 @@ BATCH_SIZE=100
 EPOCHS=50
 Z_DIM = 2
 
-print(f"Starting ConvVAE with zdim={Z_DIM}")
 transform = transforms.Compose([transforms.ToTensor()])
 train_dataset= datasets.MNIST('./',train=True,transform=transform,download=True)
 test_dataset = datasets.MNIST('./',train=False,transform=transform)
@@ -19,7 +18,7 @@ test_dataset = datasets.MNIST('./',train=False,transform=transform)
 train_loader = torch.utils.data.DataLoader(train_dataset,batch_size=BATCH_SIZE,shuffle=True,pin_memory=True)
 test_loader = torch.utils.data.DataLoader(test_dataset,batch_size=BATCH_SIZE,shuffle=False,pin_memory=True)
 
-model = ConvVAE(input_size=28,channels=[1,32,64],latent_dim=Z_DIM)
+model = ConvVAE(Z_DIM)
 optim = torch.optim.Adam(model.parameters(),lr=1e-3)
 
 def lossfunc(mean,logvar,x,xhat):
@@ -65,7 +64,7 @@ for epoch in range(1,EPOCHS+1):
     print(f', test_loss={test_loss:.2f}\n')
     test_losses.append(test_loss)
     if epoch%10 ==0:
-        torch.save(model.state_dict(),f'./checkpoint/{Z_DIM}/check{epoch}.pt')
+        torch.save(model.state_dict(),f'./checkpoint2/check{epoch}.pt')
 
 print(train_losses)
 print(test_losses)

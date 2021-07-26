@@ -142,7 +142,7 @@ test_dataset = datasets.MNIST('./',train=False,transform=transform)
 train_loader = torch.utils.data.DataLoader(train_dataset,batch_size=BATCH_SIZE,shuffle=True,pin_memory=True)
 test_loader = torch.utils.data.DataLoader(test_dataset,batch_size=BATCH_SIZE,shuffle=False,pin_memory=True)
 
-model = ConvVAE(Z_DIM)
+model = ConvVAE(input_size=28,channels=[1,32,64],latent_dim=Z_DIM)
 optim = torch.optim.Adam(model.parameters(),lr=1e-3)
 ```
 

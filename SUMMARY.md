@@ -18,6 +18,11 @@
   * [Experiment](dncnn/experiment.md)
   * [Implementation - 구현](dncnn/implemention.md)
 
+## Language Computation <a id="nlp"></a>
+
+* [Attention is All You Need\(2017\)](nlp/attention-is-all-you-need-2017/README.md)
+  * [Introduction & Background](nlp/attention-is-all-you-need-2017/introduction-and-background.md)
+
 ## ML Statistics
 
 * [VAE\(2013\)](ml-statistics/vae/README.md)

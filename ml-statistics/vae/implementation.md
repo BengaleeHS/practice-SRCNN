@@ -253,7 +253,7 @@ Z\_DIM=2에서보다 더 낮은  Loss를 보였다!
 
 4차원이므로 시각화가 까다롭다. 따라서 T-SNE를 이용해 차원축소했다.
 
-![](../../.gitbook/assets/tsne.png)
+![](../../.gitbook/assets/TSNE.png)
 
 각 숫자가 더욱 잘 모여있는 것으로 보인다. 
 

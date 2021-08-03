@@ -14,5 +14,5 @@ DnCNN\([paper](https://arxiv.org/pdf/1608.0398.pdf)\)을 PyTorch로 구현합니
 | :--- | :--- |
 | Train Loss | ![loss](.gitbook/assets/test_loss%20%281%29.png) |
 | PSNR | ![PSNR](.gitbook/assets/avg_psnr%20%281%29.png) |
-| SSIM | ![ssim](.gitbook/assets/ssim%20%281%29.png) |
+| SSIM | ![ssim](.gitbook/assets/ssim%20%282%29.png) |
 

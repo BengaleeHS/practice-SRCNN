@@ -23,6 +23,7 @@
 * [Attention is All You Need\(2017\)](nlp/attention-is-all-you-need-2017/README.md)
   * [Introduction & Background](nlp/attention-is-all-you-need-2017/introduction-and-background.md)
   * [Model Architecture](nlp/attention-is-all-you-need-2017/model-architecture.md)
+  * [Appendix - Positional Encoding 거리 증명](nlp/attention-is-all-you-need-2017/appendix-positional-encoding.md)
 
 ## ML Statistics
 

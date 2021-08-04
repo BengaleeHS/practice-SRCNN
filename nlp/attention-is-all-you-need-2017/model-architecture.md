@@ -1,8 +1,12 @@
+---
+description: 수식은 행벡터 기준으로 씁니다.
+---
+
 # Model Architecture
 
 Transformer의 구조는 다음과 같다.
 
-![](../../.gitbook/assets/image%20%285%29.png)
+![](../../.gitbook/assets/image%20%287%29.png)
 
 N x는 위의 블럭 구조가 N번 반복됨을 의미한다. 지금부터 위 도식의 각 블럭이 무엇을 의미하는지 알아보자.
 
@@ -70,7 +74,7 @@ $$
 
 ### Multi-Head Attention
 
-![](../../.gitbook/assets/image%20%286%29.png)
+![](../../.gitbook/assets/image%20%288%29.png)
 
 연구진은 한 번의 Attention만을 수행하는 것이 아닌, Linear 블럭을 이용해 다양한 방식으로 Q,K,V를 projection한 뒤, 동시에 여러 번 Attention을 수행하는 것이 성능적으로 효과적임을 발견했다. 이를 최후에는 concat해 하나의 Attention값으로 Linear을 통해 projection한다. 이를 수식으로 나타내면
 
@@ -94,7 +98,55 @@ Transformer에선 이 Multi-Head Attention을 다양한 부분에서 활용한�
 
 ## Position-wise Feed-Forward Networks
 
+간단한 2-layer FCN이다. 활성화 함수는 ReLU이다. 단, **position-wise**이다. 시퀀스의 각 position마다 하나씩 이 블럭을 통과시킨다.
+
+$$
+\mathrm{FFN}(x)=\mathrm{ReLU}(xW_1+b_1)W_2+b_2
+$$
+
+입/출력차원은 $$d_{model}=512$$이고 은닉층의 차원은 $$d_{ff}=2048$$이다.   
+즉 $$W_1\in\mathbb R^{512\times 2048}, W_2\in\mathbb R^{2048\times 512}$$이다.
+
 ## Embeddings & Softmax
 
+다른 시퀀스 변환 모델과 비슷하게 입력 토큰을 출력 토큰으로 임베딩한다. 이 모델에선 $$d_{model}=512$$으로 임베딩한다.
+
+디코더의 출력층에서 다음 토큰을 예측하기 위해 softmax를 사용해 확률값으로 바꾸는 과정도 동일하나 output embedding이 있다. $$d_{model}=512$$를 one-hot 등으로 바꾼다. 또한 인코더/디코더 임베딩 행렬과 출력부의 softmax 이전의 Linear의 행렬을 tie해 학습한다. 또한 각 임베딩 레이어에서 작은 positional encoding의 값을 유효하게 하기 위해 $$\sqrt {d_{model}}$$ 값으로 가중치를 스케일한다.
+
 ## Positional Encoding
+
+Transformer에는 Recurrent cell도 없고 convolution도 없기 때문에 위치 정보를 가지고 있지 않다. 그러므로 시퀀스의 토큰에 상대적/절대적 위치 정보를 넣을 필요가 있다. 따라서 다음 주기함수를 이용해 값을 생성한 뒤, 토큰에 더한다. Embedding dimension\(i값\)의 홀짝에 따라 positional encoding 식이 다르다.
+
+$$
+PE_{pos,2i}=\sin(pos/10000^{2i/d_{model}})
+$$
+
+$$
+PE_{pos,2i+1}=\cos (pos/10000^{2i/d_{model}})
+$$
+
+이러한 encoding을 택한 이유는 여러가지가 있다.
+
+1. 주기가 기하수열로 늘어나\( $$=2\pi\cdot10000^{2i/d}$$ \) position에 따라 encoding vector 의 거리가 일정한 비율로 줄어든다.
+
+{% hint style="success" %}
+이진수로 나타낸 수의 각 거리를 생각해 보자. 0번째 수는 1개 간격으로 바뀌고 그 다음은 두 번마다 0과 1이 바뀌며 그 다음은 주기가 4,8,16 ... 기하수열을 나타낸다\(주기 비율=2\). 이 예시와 비슷하게. 주기가 위치마다 기하수열로 증가할 때 두 pos 사이의 거리가 일정하다. 0,1번째 pos와 2,3번째 pos는 $$2\pi\cdot10000^{2/d}$$ 배의 주기 비를 가진다. 증명은 [Appendix - Positional Encoding 거리 증명](appendix-positional-encoding.md) 에 있다.
+{% endhint %}
+
+  
+2. position의 상대적인 위치를 학습할 수 있을 여지가 있기 때문이다. 이를 논문에선, $$PE_{pos}$$ 와 $$ PE_{pos+k}$$ 사이의 관계는 선형 변환으로 나타낼 수 있기 때문이라고 설명한다.
+
+{% hint style="success" %}
+회전행렬은 선형 변환이다. 네트워크가 짧은 문장과 긴 문장의 관계를 학습하며 이러한 선형 변환을 학습할 수 있으므로 학습 데이터에 없었던 긴 시퀀스에도 대응할 수 있다.   
+같은 embedding dim에선 주기가 같으므로 다음과 같이 표현하면 이것이 가능함을 알 수 있다.  
+$$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$ \(선형변환이다\)
+{% endhint %}
+
+
+
+**참고 :** $$d_{model}=64$$ 일때 토큰 위치에 따른 positional encoding vector 값은 다음 히트맵과 같다.
+
+![Source : https://jalammar.github.io/illustrated-transformer/](../../.gitbook/assets/image%20%285%29.png)
+
+
 

@@ -37,3 +37,5 @@
 
 ## Personal Project
 
+* [seq2seq](personal-project/seq2seq.md)
+

@@ -50,7 +50,7 @@ $$
 \sqrt{\sum_{i=1}^{d/2}(2-2\cos(\omega_ik))}=\sqrt{d-2\sum_{i=1}^{d/2} \cos(\omega_ik)}
 $$
 
-이 값은 position p와는 무관하게 거리 k에 따른 값이다. 
+이 값은 position p와는 무관하게 거리 k에 따른 값이다. 따라서 position 차이가 같다면 positional encoding vector의 거리 또한 거리가 항상 같다!
 
 대표적으로, 1 position 차이나는 경우, k=1이고
 
@@ -58,5 +58,5 @@ $$
 \sqrt{d-2\sum_{i=1}^{d/2} \cos(\omega_i)}
 $$
 
-이므로 position 차이가 같다면 positional encoding vector의 거리 또한 거리가 항상 같다!
+
 

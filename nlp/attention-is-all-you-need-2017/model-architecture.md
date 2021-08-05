@@ -69,7 +69,7 @@ $$
 평균이 0이고 분산이 1이고 벡터의 각 요소가 모두 독립인 d차원 벡터 a와 b가 있다고 하자. dot product는 $$a\cdot b = \sum_{i=1}^{d} a_i b_i$$이다. 
 
 서로 독립인 RV $$X, Y $$에 대해 $$\mathbb E[X+Y]=\mathbb E[X]+\mathbb E[Y]=0$$ 이고 $$\mathrm{Var}(X+Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)+2\cdot \mathrm{Cov}(X,Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)=2$$  
-이다. 변수들 간 모두 독립이라고 가정하므로 공분산이 0이기 때문에 차원의 수 만큼 분산이 커진다. 이 값에 Softmax를 취하면 gradient가 사라질 수 있으므로 표준편차인 $$\sqrt{d_k}$$로 scale한다.
+이다. 변수들 간 모두 독립이라고 가정하므로 공분산이 0이기 때문에 차원의 수 만큼 분산이 커진다. 따라서 표준편차인 $$\sqrt{d_k}$$로 scale한다.
 {% endhint %}
 
 ### Multi-Head Attention
@@ -134,12 +134,11 @@ $$
 {% endhint %}
 
   
-2. position의 상대적인 위치를 학습할 수 있을 여지가 있기 때문이다. 이를 논문에선, $$PE_{pos}$$ 와 $$ PE_{pos+k}$$ 사이의 관계는 선형 변환으로 나타낼 수 있기 때문이라고 설명한다.
+2. position의 상대적인 위치를 학습할 수 있을 여지가 있기 때문이다. 이를 논문에선, $$PE_{pos}$$ 와 $$ PE_{pos+k}$$ 사이의 관계는 고정된 offset에 대한 선형 변환으로 나타낼 수 있기 때문이라고 설명한다.
 
 {% hint style="success" %}
-회전행렬은 선형 변환이다. 네트워크가 짧은 문장과 긴 문장의 관계를 학습하며 이러한 선형 변환을 학습할 수 있으므로 학습 데이터에 없었던 긴 시퀀스에도 대응할 수 있다.   
-같은 embedding dim에선 주기가 같으므로 다음과 같이 표현하면 이것이 가능함을 알 수 있다.  
-$$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$ \(선형변환이다\)
+Positional Encoding을 다음과 같이  간단히 표현하면 이것이 가능함을 알 수 있다.$$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$  
+토큰 위치\(x\)가 아닌 위치 사이의 거리\(k\)만으로 표현된 단순한 행렬로 positional encoding의 위치 관계를 표현할 수 있다. 이는 문장의 절대적 위치 뿐만 아니라 상대적 위치를 학습할 수 있다는 것을 의미한다.
 {% endhint %}
 
 **참고자료** : [https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/](https://kazemnejad.com/blog/transformer_architecture_positional_encoding/)

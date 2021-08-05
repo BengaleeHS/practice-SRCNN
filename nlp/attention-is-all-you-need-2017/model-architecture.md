@@ -142,7 +142,7 @@ $$
 $$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$ \(선형변환이다\)
 {% endhint %}
 
-
+**참고자료** : [https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/](https://kazemnejad.com/blog/transformer_architecture_positional_encoding/)
 
 **참고 :** $$d_{model}=64$$ 일때 토큰 위치에 따른 positional encoding vector 값은 다음 히트맵과 같다.
 

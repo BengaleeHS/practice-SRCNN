@@ -38,5 +38,4 @@
 ## 직관적 이해 <a id="personal-project"></a>
 
 * [Seq2Seq](personal-project/seq2seq.md)
-* [Transformer](personal-project/transformer.md)
 

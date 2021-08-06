@@ -35,7 +35,8 @@
   * [Implementation - 구현](ml-statistics/vae/implementation.md)
   * [Appendix - KL Divergence 적분](ml-statistics/vae/appendix-kl-divergence.md)
 
-## Personal Project
+## 직관적 이해 <a id="personal-project"></a>
 
-* [seq2seq](personal-project/seq2seq.md)
+* [Seq2Seq](personal-project/seq2seq.md)
+* [Transformer](personal-project/transformer.md)
 

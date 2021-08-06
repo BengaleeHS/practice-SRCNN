@@ -89,7 +89,7 @@ $$
 
 ![](../../.gitbook/assets/image%20%288%29.png)
 
-연구진은 한 번의 Attention만을 수행하는 것이 아닌, Linear 블럭을 이용해 다양한 방식으로 Q,K,V를 projection한 뒤, 동시에 여러 번 Attention을 수행하는 것이 성능적으로 효과적임을 발견했다. 이를 최후에는 concat해 하나의 Attention값으로 Linear을 통해 projection한다. 이를 수식으로 나타내면
+연구진은 한 번의 Attention만을 수행하는 것이 아닌, Linear 블럭을 이용해 다양한 방식으로 Q,K,V를 projection한 뒤, 동시에 여러 번 Attention을 수행하는 것이 성능적으로 효과적임을 발견했다. 여러 head를 이용해 가장 중요한 토큰 뿐만 아니라 두 번째, 세 번째로 중요한 토큰도 한번에 통합할 수 있다. 이를 최후에는 concat해 하나의 Attention값으로 Linear을 통해 projection한다. 이를 수식으로 나타내면
 
 $$
 \mathrm{head}_i=\mathrm{Attention}(QW_i^Q,KW_i^K,VW_i^V)
@@ -151,7 +151,7 @@ $$
 
 {% hint style="success" %}
 Positional Encoding을 다음과 같이  간단히 표현하면 이것이 가능함을 알 수 있다.$$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$  
-토큰 위치\(x\)가 아닌 위치 사이의 거리\(k\)만으로 표현된 단순한 행렬로 positional encoding의 위치 관계를 표현할 수 있다. 이는 문장의 절대적 위치 뿐만 아니라 상대적 위치를 학습할 수 있다는 것을 의미한다.
+토큰 위치\(x\)가 아닌 위치 사이의 거리\(k\)만으로 표현된 단순한 연산으로 positional encoding의 위치 관계를 표현할 수 있다. 이는 문장의 절대적 위치 뿐만 아니라 상대적 위치를 학습할 수 있다는 것을 의미한다.
 {% endhint %}
 
 **참고자료** : [https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/](https://kazemnejad.com/blog/transformer_architecture_positional_encoding/)

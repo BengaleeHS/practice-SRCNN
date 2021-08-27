@@ -66,5 +66,17 @@ $$
 \min_{G,F} \max_{D_X,D_Y} \mathcal L(G,F,D_X,D_Y)
 $$
 
+### Additional Loss : Identity Loss
 
+논문에서 나타난 응용 중, 그림-&gt;사진 변환에서 원본의 색감 특성을 더 보존하기 위해 [기존 논문](https://arxiv.org/abs/1611.02200)에 사용된 적 있었던 Identity loss를 적용한다. 예를 들어 X-&gt;Y 변환에서 Y의 데이터가 들어왔을 경우 identity한 변환, 즉 변화시키지 않도록 만들어 generator에 제약조건을 준다. 이 변환의 차이는 L1 norm으로 측정한다.
+
+$$
+\mathcal L_{identity}(G,F)=\mathbb E_{x\sim p_{data}(x)}[\| F(x)-x \|_1]+\mathbb E_{y\sim p_{data}(y)}[\| G(y)-y \|_1]
+$$
+
+만약 이 loss가 없다면 generator G는 입력 데이터의 색상을 다르게 변화시키고 generator F는 원래대로 돌아가도록 만들어도 충분히 loss가 낮아진다. 이를 방지하고 안정적 학습을 위해 제약조건을 추가한 것이다.
+
+{% hint style="info" %}
+예를 들어 generator G는 말 이미지에서 얼룩말을 출력하도록 해야 한다고 하자. 아무것도 최적화되지 않은 상태에서 얼룩말이 출력되도록 최적화되는데에 너무 많은 경우의 수가 있다. 따라서얼룩말 이미지를 넣었을 때 얼룩말 이미지를 출력하도록 해 **얼룩말을 출력하는 방법을 안정적으로 배우게 한다.**
+{% endhint %}
 

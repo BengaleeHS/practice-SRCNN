@@ -22,6 +22,8 @@ PatchGAN은 이미지 전체를 보고 하나의 T/F값을 내는 것이 아닌 
 
 ### Training
 
+GAN의 학습은 매우 불안정하다. Generator에 비해 discriminator의 파라미터는 상대적으로 적기 때문에 discriminator의 학습이 쉬우며 불안정하고 generator또한 영향을 받는다. 이를 해결하기 위해 여러 안정화 방법이 사용된다. 학습의 안정화를 위해 CycleGAN에서는 다음 두 방법을 사용한다.
+
 앞에서 설명한 loss function은 음의 로그 가능도였지만 학습의 안정화를 위해 least-square loss\(최소제곱, LSGAN에서 사용\)를 사용한다. Generator와 Discriminator에 적용되는 loss를 식으로 나타내면
 
 $$
@@ -30,9 +32,11 @@ $$
 
 Generator는 discriminator가 1을 만들도록 학습하며 Discriminator는 올바르게 구분할 수 있도록 최소화한다는 점은 같다.
 
-또, 학습 곡선의 안정화를 위해 이전에 generator가 생성한 50개의 이미지를 버퍼에 저장, 이를 이용해 discriminator를 업데이트한다. 
+또, 학습 곡선의 안정화를 위해 이전에 generator가 생성한 50개의 이미지를 버퍼\(replay buffer\)에 저장, 이를 이용해 discriminator를 50개의 이미지로 업데이트한다. 
 
 Adam optimizer에 0.0002의 learning rate를 사용하고 cycle consistency loss의 가중치는 $$\lambda = 10$$으로 한다. Batch size=1이고 100epoch 이후에는 lr을 decay한다.
+
+
 
 
 

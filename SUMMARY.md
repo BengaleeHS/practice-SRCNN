@@ -20,7 +20,7 @@
 * [CycleGAN\(2017\)](cyclegan-2017/README.md)
   * [Introduction](cyclegan-2017/introduction.md)
   * [Formulation](cyclegan-2017/formulation.md)
-  * [Implementation](cyclegan-2017/implementation.md)
+  * [Results](cyclegan-2017/implementation.md)
 
 ## Language Computation <a id="nlp"></a>
 

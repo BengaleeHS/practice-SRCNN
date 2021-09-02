@@ -236,7 +236,7 @@ class Seq2Seq(nn.Module):
 
 **\(28번 줄\)** 양방향 인코더의 마지막 hidden state는 $$(2\times layers,N,H)$$ 이므로 첫번째 차원을  세 번째 차원으로 concat해서 $$(layers,N,H)$$의 차원으로 통합해 준다. 이를 디코더의 첫 번째 hidden state로 넘긴다.
 
-**\(32번 줄\)** 디코더의 첫 입력은 문장의 시작이므로 &lt;s&gt;이다.
+**\(32번 줄\)** 디코더의 첫 입력은 문장의 시작을 나타내야 하므로 항상 &lt;s&gt;이다.
 
 **\(34번 줄\)** target 문장의 최대 길이까지 timestep을 반복한다.
 

@@ -42,5 +42,5 @@
 ## 직관적 이해 <a id="personal-project"></a>
 
 * [Seq2Seq](personal-project/seq2seq/README.md)
-  * [Implementation - 구현햔](personal-project/seq2seq/implementation.md)
+  * [Ko-En Translation](personal-project/seq2seq/implementation.md)
 

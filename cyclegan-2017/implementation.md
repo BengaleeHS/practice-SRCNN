@@ -36,6 +36,8 @@ Generator는 discriminator가 1을 만들도록 학습하며 Discriminator는 �
 
 Adam optimizer에 0.0002의 learning rate를 사용하고 cycle consistency loss의 가중치는 $$\lambda = 10$$으로 한다. Batch size=1이고 100epoch 이후에는 lr을 decay한다.
 
+## Results
+
 
 
 

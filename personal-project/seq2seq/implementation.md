@@ -212,7 +212,7 @@ class Seq2Seq(nn.Module):
 
 
         #decoder forward
-        dec_input =y[0]
+        dec_input = torch.ones(batch).long().to(DEVICE) * 2 # SOS_token, (N)
 
         for i in range(maxlen):
             out,h_dec = self.decoder(dec_input,h_dec,hiddens,mask) # out : [ N, n_dec_input]
@@ -220,8 +220,8 @@ class Seq2Seq(nn.Module):
             argmax = out.argmax(1) 
             
             tf = True if random.random()<=tf_p else False
-            if tf and i+1<maxlen :
-                dec_input = y[i+1]
+            if tf :
+                dec_input = y[i]
             else:
                 dec_input = argmax.int() # [N]
         
@@ -236,11 +236,11 @@ class Seq2Seq(nn.Module):
 
 **\(28번 줄\)** 양방향 인코더의 마지막 hidden state는 $$(2\times layers,N,H)$$ 이므로 첫번째 차원을  세 번째 차원으로 concat해서 $$(layers,N,H)$$의 차원으로 통합해 준다. 이를 디코더의 첫 번째 hidden state로 넘긴다.
 
-**\(32번 줄\)** target 문장 데이터의 첫 번재 토큰들을 디코더 입력으로 둔다.
+**\(32번 줄\)** 디코더의 첫 입력은 문장의 시작이므로 &lt;s&gt;이다.
 
 **\(34번 줄\)** target 문장의 최대 길이까지 timestep을 반복한다.
 
 **\(35-37번 줄\)** 디코더에 입력 후 출력을 가져온다. 출력된 hidden state는 다음 timestep으로 넘기기 위해 h\_dec에 다시 저장한다. 출력을 저장하고 최대 확률을 가지는 단어의 index를 argmax에 저장한다.
 
-**\(39-43번 줄\)** 교사 강요\(Teacher Forcing\)을 확률적으로 적용하기 위해 생성한 0~1 랜덤 수에 따라 진행한다. 만약 교사 강요를 할 경우, 다음 디코더 입력으로 target 문장의 다음 토큰을 준비한다. 마지막 인덱스에선 다음 토큰이 없으므로 pass한다.
+**\(39-43번 줄\)** 교사 강요\(Teacher Forcing\)을 확률적으로 적용하기 위해 생성한 0~1 랜덤 수에 따라 진행한다. 만약 교사 강요를 할 경우, 다음 디코더 입력으로 정답 단어를 다음 입력으로 넘기고, 아닐 경우 현재 출력을 다음 입력으로 넘긴다.
 

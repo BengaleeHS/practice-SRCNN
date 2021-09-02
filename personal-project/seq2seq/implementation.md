@@ -140,8 +140,8 @@ class AttnDecoder(nn.Module):
         #Layers
         self.dropout = nn.Dropout(p=dropout)
         self.embedding = nn.Embedding(n_input,n_hidden,padding_idx=0)
-        self.gru = nn.GRU(n_hidden,n_hidden,n_layers,dropout=dropout)
-        self.fc = nn.Linear(n_hidden,n_input)
+        self.gru = nn.GRU(n_hidden*2,n_hidden,n_layers,dropout=dropout)
+        self.fc = nn.Linear(n_hidden*3,n_input)
 
         #Attention weights
         self.Wq = nn.Linear(n_hidden, n_hidden, bias=False)
@@ -159,13 +159,12 @@ class AttnDecoder(nn.Module):
 
         enc_hiddens = enc_hiddens.transpose(0,1) #(N, L, n_hidden)
         attn = torch.bmm(scores, enc_hiddens).transpose(0,1) # (1, N, n_hidden)
-        attn_emb = torch.relu(self.aggr_embed(torch.cat((attn,x),dim=2))) # (1, N, 2* n_hidden) -> # (1, N, n_hidden)
 
-        x,h = self.gru(attn_emb,h_prev)        #h_t: (n_layers, N, n_hidden) x: (1, N, n_hidden)     
+        out,h = self.gru(torch.cat((attn,x),dim=2),h_prev)        #h_t: (n_layers, N, n_hidden) x: (1, N, n_hidden)     
 
-        x=torch.log_softmax(self.fc(x[0]),dim=1) #x: (N, n_input)
+        out=torch.log_softmax(self.fc(torch.cat((out[0],x[0],attn[0]),dim=1)),dim=1) #x: (N, n_input)
        
-        return x,h
+        return out,h,scores
 ```
 
 **\(27번 줄\)** Bahdanau Attention을 사용한다. Dot attention과는 달리 t-1 시점의 hidden state를 attention에 **먼저** 사용한 뒤 임베딩 출력과 합쳐 GRU에 넣는다. Bahdanau Attention의 score 식은 다음과 같다. j번째 \(마지막 layer\) 인코더 hidden state에 대한 score이다.
@@ -177,6 +176,8 @@ $$
 **\(28번 줄\)** 배치마다 길이가 다르므로, 유효한 모든 j에 대해 이를 수행하고 softmax취한다. 유효한 j만 골라내기 위해 mask를 입력받는다. 값을 음의 무한대로 두면 softmax 시 0이 된다.
 
 **\(30-34번 줄\)** 이 값들과 인코더 hidden state에 곱한 결과를 임베딩 결과와 합쳐 GRU Cell에 넣는다.
+
+**\(35번 줄\)** 최종 출력은 어텐션 결과, RNN 출력, 임베딩 출력을 모두 합쳐 계산한다.
 
 ### Seq2Seq 통합
 

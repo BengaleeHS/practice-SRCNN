@@ -12,11 +12,19 @@ AI Hub의 [한국어-영어 번역 말뭉치\(병렬\)](https://aihub.or.kr/aida
 
 ### 파싱
 
-xlsx 파일이므로 pandas와 openpyxl을 설치해 파싱하고, 텍스트 파일로 저장한다. 저장할 때 미리 전처리한 후 저장한다.
+xlsx 파일이므로 pandas와 openpyxl을 설치해 파싱하고, 텍스트 파일로 저장한다. 저장할 때 미리 전처리 및 tokenize 후 저장한다.
 
 ```python
+# -*- coding: utf-8 -*-
+import torchtext
+from konlpy.tag import Okt
+
 import pandas as pd
 import re
+
+token_ko = Okt().morphs
+token_en = torchtext.data.utils.get_tokenizer('basic_english')
+
 
 lines = pd.read_excel('./1_구어체(1).xlsx',names=['sid','src','tar'])
 del lines['sid']
@@ -26,17 +34,25 @@ def textprocess(kot,ent):
     kot = re.sub(r"([.!?])", r" \1", kot)
     kot = re.sub(r"[^ㄱ-ㅎㅏ-ㅣ가-힣,.!?]",r" ",kot)
     kot = re.sub(r"\s+",r" ",kot)
+    kot = ' '.join(token_ko(kot))
+    
 
     ent = ent.lower().strip()
     ent = re.sub(r"([.!?])", r" \1", ent)
     ent = re.sub(r"[^a-zA-Z,.!?]+", r" ", ent)
     ent = re.sub(r"\s+",r" ",ent)
-
+    ent = ' '.join(token_en(ent))
+    
     return kot,ent
 
 with open('./kor.txt','w',encoding='utf-8') as ko,open('./eng.txt','w',encoding='utf-8') as en :
-
+    length = len(lines)
+    print(f"Total lines = {length}")
+    i=0
     for i in lines.index:
+        if(i%2000 == 0):
+            print(f'{i/length*100:.2f}%')
+
         text = lines.loc[i]
         kot = text['src']
         ent = text['tar']
@@ -48,32 +64,52 @@ with open('./kor.txt','w',encoding='utf-8') as ko,open('./eng.txt','w',encoding=
         en.write('\n')
 ```
 
-문장해 존재하는 문장부호 앞에 공백을 추가하고 한글/영어와 필요한 문장부호만 남긴다. 지우며 생긴 여러개의 공백을 하나의 공백으로 바꾼다.
+문장해 존재하는 문장부호 앞에 공백을 추가하고 한글/영어와 필요한 문장부호만 남긴다. 지우며 생긴 여러개의 공백을 하나의 공백으로 바꾼다. 그 후 tokenize한다.
 
 ### 어휘집 / 토크나이저
 
-Sentencepiece를 사용한다. 보통 konlpy의 Okt와 SpaCy를 사용해 각각 한국어와 영어를 tokenize하지만 간단한 구현을 위해 sentencepiece를 사용해 어휘집과 토크나이저를 만든다.
+Sentencepiece를 사용한다. konlpy의 Okt와 SpaCy를 사용해 각각 한국어와 영어를 tokenize한다. vocab 제작은 torchtext를 이용한다.
 
 ```python
-import sentencepiece as spm
+from konlpy.tag import Okt
+import torch
+from torchtext.vocab import build_vocab_from_iterator
+import torchtext
+okt = Okt()
+spc = torchtext.data.utils.get_tokenizer('basic_english')
 
-corpus = "kor.txt"
-prefix = "kor"
 
-vocab_size=8000
+def eniter(path):
+    with open(path,encoding='utf-8') as file:
+        lines = file.readlines()
+        for line in lines:
+            line = line.split('\t\t\t\t')[1]
+            line = line.lower().strip()
+            yield spc(line)
+            
 
-spm.SentencePieceTrainer.Train(
-    f"--input={corpus} --model_prefix={prefix} --vocab_size={vocab_size + 7}" + 
-    " --model_type=unigram" +
-    " --pad_id=0 --pad_piece=<pad>" + 
-    " --unk_id=1 --unk_piece=<unk>" + 
-    " --bos_id=2 --bos_piece=<s>" + 
-    " --eos_id=3 --eos_piece=<\s>")
+def koiter(path):
+    
+    with open(path,encoding='utf-8') as file:
+        lines = file.readlines()
+        for line in lines:
+            line = line.split('\t\t\t\t')[0]
+            line = line.lower().strip()
+            yield okt.morphs(line)
+
+
+vocab_en = build_vocab_from_iterator(eniter('./koreng.txt'),min_freq=10,specials=["<pad>","<unk>","<s>","<\s>"])
+vocab_en.set_default_index(vocab_en["<unk>"])
+torch.save(vocab_en,'vocab_en.pth')
+
+
+vocab_ko = build_vocab_from_iterator(koiter('./koreng.txt'),min_freq=10,specials=["<pad>","<unk>","<s>","<\s>"])
+vocab_ko.set_default_index(vocab_ko["<unk>"])
+torch.save(vocab_ko,'vocab_ko.pth')
+
 ```
 
 특수 기호는 &lt;pad&gt;, &lt;unk&gt;, &lt;s&gt;, &lt;\s&gt;가 있고 각각 0, 1, 2, 3번이다. &lt;s&gt;는 문장의 시작, &lt;\s&gt;는 문장의 끝 토큰이며 &lt;pad&gt;는 길이가 다른 여러 문장을 병렬화하기 위해 빈 공간을 채우는데 사용한다.
-
-![sentencepiece &#xD559;&#xC2B5; &#xACB0;&#xACFC;](../../.gitbook/assets/image%20%2822%29.png)
 
 kor.txt와 eng.txt를 이용해 실행한 결과 다음 파일이 생성된다.
 
@@ -148,7 +184,6 @@ class AttnDecoder(nn.Module):
         self.Wq = nn.Linear(n_hidden, n_hidden, bias=False)
         self.Wk = nn.Linear(n_hidden, n_hidden, bias=False)
         self.Wc = nn.Linear(n_hidden, 1 ,bias=False)
-        self.aggr_embed = nn.Linear(2*n_hidden, n_hidden)
         
     def forward(self,x,h_prev,enc_hiddens, mask):
 
@@ -156,7 +191,8 @@ class AttnDecoder(nn.Module):
         x = self.dropout(self.embedding(x))    #(1,N) -> (1,N,n_hidden)
 
         scores = self.Wc(torch.tanh(self.Wq(h_prev[-1].unsqueeze(0)) + self.Wk(enc_hiddens))).squeeze(2)   # (L, N)
-        scores =  torch.softmax(torch.masked_fill(scores, mask = (mask[:enc_hiddens.size(0)] == False), value = -float('inf')),dim=0).transpose(0,1).unsqueeze(1) # (N,1,L)
+
+        scores =  torch.softmax(torch.masked_fill(scores, mask = (mask == False), value = -float('inf')),dim=0).transpose(0,1).unsqueeze(1) # (N,1,L)
 
         enc_hiddens = enc_hiddens.transpose(0,1) #(N, L, n_hidden)
         attn = torch.bmm(scores, enc_hiddens).transpose(0,1) # (1, N, n_hidden)
@@ -168,7 +204,7 @@ class AttnDecoder(nn.Module):
         return out,h,scores
 ```
 
-**\(27번 줄\)** Bahdanau Attention을 사용한다. Dot attention과는 달리 t-1 시점의 hidden state를 attention에 **먼저** 사용한 뒤 임베딩 출력과 합쳐 GRU에 넣는다. Bahdanau Attention의 score 식은 다음과 같다. j번째 \(마지막 layer\) 인코더 hidden state에 대한 score이다.
+**\(26번 줄\)** Bahdanau Attention을 사용한다. Dot attention과는 달리 t-1 시점의 hidden state를 attention에 **먼저** 사용한 뒤 임베딩 출력과 합쳐 GRU에 넣는다. Bahdanau Attention의 score 식은 다음과 같다. j번째 \(마지막 layer\) 인코더 hidden state에 대한 score이다.
 
 $$
 score(s_{t-1},h_j)=W_c\tanh (W_a[s_{t-1};h_j]) = W_c\tanh (W_q s_{t-1}+W_k h_j)

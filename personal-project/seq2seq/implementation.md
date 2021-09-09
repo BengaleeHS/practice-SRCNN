@@ -103,10 +103,11 @@ class Encoder(nn.Module):
         self.embedding = nn.Embedding(n_input,n_hidden,padding_idx=0)
         self.gru = nn.GRU(n_hidden,n_hidden,n_layers,bidirectional=True,dropout=dropout)
         self.projection = nn.Linear(2*n_hidden,n_hidden)
+        self.dropout = nn.Dropout(p=dropout)
 
     def forward(self,x,h_0,lengths):
         # x : (L,N)
-        x = self.embedding(x)
+        x = self.dropout(self.embedding(x))
 
         x = nn.utils.rnn.pack_padded_sequence(x, lengths)
         x,h_t = self.gru(x,h_0) # h_t: (2*n_layers, N, n_hidden), x : (L, N, bi*n_hidden)
@@ -119,9 +120,9 @@ class Encoder(nn.Module):
 
 GRU Cell을 이용한 RNN을 만든다. 은닉층과 임베딩 차원이 같다고 설정했다.
 
-**\(19, 21번 줄\)**`nn.utils.rnn.pack_padded_sequence(x, lengths)` 부분이 있는데, 이는 여러 개의 배치를 한번에 연산할 때, **&lt;pad&gt; 토큰은 계산하지 않도록** 만들어준다. 단, 입력 배치의 길이를 내림차순으로 정렬해 줄 필요가 있으므로, train 시 처리한다.
+**\(20, 22번 줄\)**`nn.utils.rnn.pack_padded_sequence(x, lengths)` 부분이 있는데, 이는 여러 개의 배치를 한번에 연산할 때, **&lt;pad&gt; 토큰은 계산하지 않도록** 만들어준다. 단, 입력 배치의 길이를 내림차순으로 정렬해 줄 필요가 있으므로, train 시 처리한다.
 
-**\(23번 줄\)** GRU cell은 출력으로 그 timestep의 hidden state를 출력한다. 이 차원은 $$(L,N,2\times H)$$이다. 후에 디코더에서 attention을 실행할 때 차원을 맞추기 위해 concat하고 통합한다.
+**\(24번 줄\)** GRU cell은 출력으로 그 timestep의 hidden state를 출력한다. 이 차원은 $$(L,N,2\times H)$$이다. 후에 디코더에서 attention을 실행할 때 차원을 맞추기 위해 concat하고 통합한다.
 
 마지막 hidden state는 그대로 출력한다.
 
@@ -220,7 +221,7 @@ class Seq2Seq(nn.Module):
             outputs[i]=out
             argmax = out.argmax(1) 
             
-            tf = True if random.random()<=tf_p else False
+            tf = random.random()<tf_p
             if tf :
                 dec_input = y[i]
             else:

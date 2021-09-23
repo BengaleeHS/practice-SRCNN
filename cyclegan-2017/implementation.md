@@ -6,11 +6,11 @@
 
 #### Generator
 
-컨볼루션 레이어가 세 개이고 residual block이 몇 개 있는 네트워크 구조를 가진다.
+컨볼루션 레이어와 residual block으로 구성된다.
 
-컨볼루션 레이어 중 두 레이어는 fractionally strided convolution\(보통 ConvTranspose\)이고 나머지 하나는 결과를 RGB로 출력한다.
+가장 먼저 세 개의 컨볼루션 레이어가 있고, residual block이 128x128 이미지에서 6개, 256x256 이미지에서 9개 있다. 그 뒤 두 레이어는 fractionally strided convolution\(보통 ConvTranspose\)이고 마지막 하나는 결과를 RGB로 출력한다.
 
-Residual block은 128x128 이미지에서 6개, 256x256 이미지에서 9개를 사용한다.
+Residual block은 
 
 #### Discriminator
 

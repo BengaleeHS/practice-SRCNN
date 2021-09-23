@@ -38,7 +38,23 @@ Adam optimizer에 0.0002의 learning rate를 사용하고 cycle consistency loss
 
 ## Results
 
+모든 결과를 표시하진 않고, CycleGAN의 목적을 이해하는 데 핵심적인 결과만 본다.
 
+### Ablation
 
+![](../.gitbook/assets/image%20%2826%29.png)
 
+논문에서 CycleGAN의 일부 구조를 제거\(ablation, 절제\)하며 loss function을 분석한다. GAN loss와 cycle consistency loss를 각각 없애면 성능이 크게 줄어든다. 두 loss모두 성능에 결정적인 영향을 미치는 것으로 판단했다. 한쪽 방향의 cycle consistency loss를 없앴을 때, mode collapse가 나타났다고 한다. 
+
+### Identity loss
+
+![](../.gitbook/assets/image%20%2825%29.png)
+
+연구진은 style transfer과 같은 task에서 identity loss를 추가했다.[ 앞에서](formulation.md#additional-loss-identity-loss) 설명한 것 처럼 loss는 다음과 같다.
+
+$$
+\mathcal L_{identity}(G,F)=\mathbb E_{x\sim p_{data}(x)}[\| F(x)-x \|_1]+\mathbb E_{y\sim p_{data}(y)}[\| G(y)-y \|_1]
+$$
+
+도메인 변환 시, identity loss가 없다면 generator가 색감을 완전히 바꾸어도 충분히 최적화된다.  GAN loss는 서로를 속이는 것에 대한 loss고, cycle consistency loss는 왕복 복원에 대한 loss기 때문에 한 도메인에서 다른 도메인으로 변환된 후 색감을 바꾸어 버려도 매우 잘 최적화된다. 따라서 두 도메인의 차이를 줄여주는 constrain을 건다.
 

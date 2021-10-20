@@ -26,7 +26,7 @@ $$
 
 ### Architecture
 
-![Fig. 1. The architecture of the proposed DnCNN network.](../.gitbook/assets/image.png)
+![Fig. 1. The architecture of the proposed DnCNN network.](../../.gitbook/assets/image.png)
 
 | Layer #  | Construction | In/out channel |
 | -------- | ------------ | -------------- |
@@ -42,7 +42,7 @@ $$
 
 분명 Fig. 1의 architecture는 residual learning으로써 사용될 수 있을 뿐만 아니라 노이즈가 없는 이미지를 그대로 출력하는 데 사용될 수 있다. [다른 논문](https://arxiv.org/abs/1512.03385)에 따르면 mapping이 identity 에 가깝다면 그 차이(residual)을 줄이는 것이 최적화하기 더 쉽다고 주장한다. 노이즈를 제거하는 과정은 이미지의 특정을 대부분 보존한 채 노이즈만 없애는 것이므로  identity mapping에 가까우며, residual learning이 더 효과적이라는 예측을 할 수 있다.&#x20;
 
-![Fig. 2. The Gaussian denoisiㄹng results of four specific models under two gradient-based optimization algorithms](<../.gitbook/assets/image (2).png>)
+![Fig. 2. The Gaussian denoisiㄹng results of four specific models under two gradient-based optimization algorithms](<../../.gitbook/assets/image (2).png>)
 
 SGD에서 BN을 적용하지 않은 것이 잘 최적화되지 않는 반면, Adam에서 최적화가 잘 되는 것으로 보아 BN이 최적화에 도움을 준 다는 것을 알 수 있고, BN을 적용했을 때 모두 최적화가 잘 되는 것으로 보아 BN이 안정적인 최적화에 도움을 준다는 것을 알 수 있다.
 

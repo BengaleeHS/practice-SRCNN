@@ -10,11 +10,11 @@
 
 가장 먼저 세 개의 컨볼루션 레이어가 있고, residual block이 128x128 이미지에서 6개, 256x256 이미지에서 9개 있다. 그 뒤 두 레이어는 fractionally strided convolution(보통 ConvTranspose)이고 마지막 하나는 결과를 RGB로 출력한다.
 
-Residual block은&#x20;
+Residual block은 Conv - Conv - Residual 구조이다.
 
 #### Discriminator
 
-PatchGAN에 사용된 discriminator 구조를 사용한다. 70x70의 patch 크기를 가지는 모델이다.
+PatchGAN에 사용된 discriminator 구조를 사용한다. 70x70의 patch(receptive field) 크기를 가지는 모델이다.
 
 {% hint style="success" %}
 PatchGAN은 이미지 전체를 보고 하나의 T/F값을 내는 것이 아닌 window 내의 픽셀만 보고 이동하면서 여러개의 T/F값을 내는 discriminator를 사용한다. 따라서 파라미터 수가 줄어들며, discriminator를 속이기 위해 이미지 부분부분이 흐릿해지는 현상이 해결된다.
@@ -42,13 +42,13 @@ Adam optimizer에 0.0002의 learning rate를 사용하고 cycle consistency loss
 
 ### Ablation
 
-![](<../.gitbook/assets/image (27).png>)
+![](<../../.gitbook/assets/image (27).png>)
 
 논문에서 CycleGAN의 일부 구조를 제거(ablation, 절제)하며 loss function을 분석한다. GAN loss와 cycle consistency loss를 각각 없애면 성능이 크게 줄어든다. 두 loss모두 성능에 결정적인 영향을 미치는 것으로 판단했다. 한쪽 방향의 cycle consistency loss를 없앴을 때, mode collapse가 나타났다고 한다.&#x20;
 
 ### Identity loss
 
-![](<../.gitbook/assets/image (28).png>)
+![](<../../.gitbook/assets/image (28).png>)
 
 연구진은 style transfer과 같은 task에서 identity loss를 추가했다.[ 앞에서](formulation.md#additional-loss-identity-loss) 설명한 것 처럼 loss는 다음과 같다.
 

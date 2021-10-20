@@ -48,16 +48,16 @@ $$\bold z$$ 를 하나 **역전파 가능하도록** 샘플링하는 데 성공�
 
 구하려는 lower bound는 다음과 같다.
 
-$$
-\tilde \mathcal L(\theta,\phi;\bold x^{(i)})=-D_{KL}(q_{\bm \phi}(\bold z|\bold x^{(i)})||p_{\bm \theta}(\bold z))+\frac 1 L\sum^L_{l=1}\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})
-$$
-
 지금까지 $$q_{\bm \phi}(\bold z|\bold x^{(i)})$$와 $$p_{\bm \theta}(\bold z)$$ 모두 정규분포로 가정했기 때문에 위 식의 KL Divergence 부분은 수식 정리를 통해 간단히 만들 수 있다. 이 과정은 수식 전개가 필요하기 때문에 과정을 [Appendix](appendix-kl-divergence.md)에 정리해 놓았다.$$\bm \mu(\bold x^{(i)}), \bm \sigma(\bold x^{(i)})$$를 각각 $$\bm \mu^{(i)},\bm \sigma^{(i)}$$ 로 간단하게 표시하자.
 
 &#x20;결론적으로 $$\bold z$$의_ _차원 $$J$$ 에 대해,  lower bound는 다음과 같이 표현된다.&#x20;
 
 $$
-\tilde \mathcal L(\theta,\phi;\bold x^{(i)})=\frac 1 2\sum^J_{j=1}\left(1 +\log((\sigma_j^{(i)})^2)  -(\mu_j^{(i)})^2-(\sigma_j^{(i)})^2   \right)+\frac 1 L\sum^L_{l=1}\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})
+\tilde{ \mathcal L}(\theta,\phi;\bold x^{(i)})=-D_{KL}(q_{\bm \phi}(\bold z|\bold x^{(i)})||p_{\bm \theta}(\bold z))+\frac 1 L\sum^L_{l=1}\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})
+$$
+
+$$
+\tilde {\mathcal L}(\theta,\phi;\bold x^{(i)})=\frac 1 2\sum^J_{j=1}\left(1 +\log((\sigma_j^{(i)})^2)  -(\mu_j^{(i)})^2-(\sigma_j^{(i)})^2   \right)+\frac 1 L\sum^L_{l=1}\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})
 $$
 
 인코더에서 출력된 $$\bold z$$의 평균과 분산 벡터, 출력된 $$\bold z$$에 대해 디코더에서 올바른 데이터 $$x^{(i)}$$가 나타날 가능도(cross entropy loss)를 이용하면 estimator를 계산할 수 있다. 이를 미분/역전파해 최적화하는 것이 Variational Auto-Encoder이다.

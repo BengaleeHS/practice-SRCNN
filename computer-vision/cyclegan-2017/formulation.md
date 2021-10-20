@@ -16,7 +16,7 @@ Adversarial loss와 Cycle consistency loss, 두 loss를 정의한다.
 
 ## Objective Functions
 
-![fig 3](<../.gitbook/assets/image (23).png>)
+![fig 3](<../../.gitbook/assets/image (23).png>)
 
 ### Adversarial loss
 

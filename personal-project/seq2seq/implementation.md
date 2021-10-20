@@ -4,11 +4,11 @@
 
 ### 데이터셋
 
-AI Hub의 [한국어-영어 번역 말뭉치\(병렬\)](https://aihub.or.kr/aidata/87) 사용한다.
+AI Hub의 [한국어-영어 번역 말뭉치(병렬)](https://aihub.or.kr/aidata/87) 사용한다.
 
-1\_구어체\(1\).xlsx의 200,000개의 한국어-영어 쌍을 이용해 어휘를 구성하고 학습한다.
+1\_구어체(1).xlsx의 200,000개의 한국어-영어 쌍을 이용해 어휘를 구성하고 학습한다.
 
-![&#xC774; &#xC678;&#xC5D0;&#xB3C4; &#xB9CE;&#xC740; &#xC14B;&#xC774; &#xC788;&#xB2E4;.](../../.gitbook/assets/image%20%2823%29.png)
+![이 외에도 많은 셋이 있다.](<../../.gitbook/assets/image (24).png>)
 
 ### 파싱
 
@@ -109,7 +109,7 @@ torch.save(vocab_ko,'vocab_ko.pth')
 
 ```
 
-특수 기호는 &lt;pad&gt;, &lt;unk&gt;, &lt;s&gt;, &lt;\s&gt;가 있고 각각 0, 1, 2, 3번이다. &lt;s&gt;는 문장의 시작, &lt;\s&gt;는 문장의 끝 토큰이며 &lt;pad&gt;는 길이가 다른 여러 문장을 병렬화하기 위해 빈 공간을 채우는데 사용한다.
+특수 기호는 \<pad>, \<unk>, \<s>, <\s>가 있고 각각 0, 1, 2, 3번이다. \<s>는 문장의 시작, <\s>는 문장의 끝 토큰이며 \<pad>는 길이가 다른 여러 문장을 병렬화하기 위해 빈 공간을 채우는데 사용한다.
 
 kor.txt와 eng.txt를 이용해 실행한 결과 다음 파일이 생성된다.
 
@@ -117,9 +117,9 @@ kor.txt와 eng.txt를 이용해 실행한 결과 다음 파일이 생성된다.
 
 양방향 인코더와 어텐션을 사용한 multilayer Seq2seq를 만들 것이다.
 
-![](../../.gitbook/assets/image%20%2824%29.png)
+![](<../../.gitbook/assets/image (26).png>)
 
-multilayer이므로 위의 그림과 같은 구조가 나온다. 
+multilayer이므로 위의 그림과 같은 구조가 나온다.&#x20;
 
 **인코더가 양방향이므로 디코더로 hidden state를 넘길 때 반드시 차원을 절반으로 줄여주어야 한다.**
 
@@ -156,9 +156,9 @@ class Encoder(nn.Module):
 
 GRU Cell을 이용한 RNN을 만든다. 은닉층과 임베딩 차원이 같다고 설정했다.
 
-**\(20, 22번 줄\)**`nn.utils.rnn.pack_padded_sequence(x, lengths)` 부분이 있는데, 이는 여러 개의 배치를 한번에 연산할 때, **&lt;pad&gt; 토큰은 계산하지 않도록** 만들어준다. 단, 입력 배치의 길이를 내림차순으로 정렬해 줄 필요가 있으므로, train 시 처리한다.
+**(20, 22번 줄)**`nn.utils.rnn.pack_padded_sequence(x, lengths)` 부분이 있는데, 이는 여러 개의 배치를 한번에 연산할 때, **\<pad> 토큰은 계산하지 않도록** 만들어준다. 단, 입력 배치의 길이를 내림차순으로 정렬해 줄 필요가 있으므로, train 시 처리한다.
 
-**\(24번 줄\)** GRU cell은 출력으로 그 timestep의 hidden state를 출력한다. 이 차원은 $$(L,N,2\times H)$$이다. 후에 디코더에서 attention을 실행할 때 차원을 맞추기 위해 concat하고 통합한다.
+**(24번 줄)** GRU cell은 출력으로 그 timestep의 hidden state를 출력한다. 이 차원은 $$(L,N,2\times H)$$이다. 후에 디코더에서 attention을 실행할 때 차원을 맞추기 위해 concat하고 통합한다.
 
 마지막 hidden state는 그대로 출력한다.
 
@@ -204,17 +204,17 @@ class AttnDecoder(nn.Module):
         return out,h,scores
 ```
 
-**\(26번 줄\)** Bahdanau Attention을 사용한다. Dot attention과는 달리 t-1 시점의 hidden state를 attention에 **먼저** 사용한 뒤 임베딩 출력과 합쳐 GRU에 넣는다. Bahdanau Attention의 score 식은 다음과 같다. j번째 \(마지막 layer\) 인코더 hidden state에 대한 score이다.
+**(26번 줄)** Bahdanau Attention을 사용한다. Dot attention과는 달리 t-1 시점의 hidden state를 attention에 **먼저** 사용한 뒤 임베딩 출력과 합쳐 GRU에 넣는다. Bahdanau Attention의 score 식은 다음과 같다. j번째 (마지막 layer) 인코더 hidden state에 대한 score이다.
 
 $$
 score(s_{t-1},h_j)=W_c\tanh (W_a[s_{t-1};h_j]) = W_c\tanh (W_q s_{t-1}+W_k h_j)
 $$
 
-**\(28번 줄\)** 배치마다 길이가 다르므로, 유효한 모든 j에 대해 이를 수행하고 softmax취한다. 유효한 j만 골라내기 위해 mask를 입력받는다. 값을 음의 무한대로 두면 softmax 시 0이 된다.
+**(28번 줄)** 배치마다 길이가 다르므로, 유효한 모든 j에 대해 이를 수행하고 softmax취한다. 유효한 j만 골라내기 위해 mask를 입력받는다. 값을 음의 무한대로 두면 softmax 시 0이 된다.
 
-**\(30-34번 줄\)** 이 값들과 인코더 hidden state에 곱한 결과를 임베딩 결과와 합쳐 GRU Cell에 넣는다.
+**(30-34번 줄)** 이 값들과 인코더 hidden state에 곱한 결과를 임베딩 결과와 합쳐 GRU Cell에 넣는다.
 
-**\(35번 줄\)** 최종 출력은 어텐션 결과, RNN 출력, 임베딩 출력을 모두 합쳐 계산한다.
+**(35번 줄)** 최종 출력은 어텐션 결과, RNN 출력, 임베딩 출력을 모두 합쳐 계산한다.
 
 ### Seq2Seq 통합
 
@@ -268,17 +268,16 @@ class Seq2Seq(nn.Module):
         return outputs
 ```
 
-**\(19-24번 줄\)** 인코더의 초기 hidden state와 결과를 저장할 텐서를 만든다. 인코더의 유효한 토큰 위치만을 마스킹하기 위한 mask도 생성한다.
+**(19-24번 줄) **인코더의 초기 hidden state와 결과를 저장할 텐서를 만든다. 인코더의 유효한 토큰 위치만을 마스킹하기 위한 mask도 생성한다.
 
-**\(27번 줄\)** 인코더를 거쳐 인코더의 마지막 layer의 hidden state들과, decoder로 넘겨줄 마지막 hidden state를 저장한다.
+**(27번 줄) **인코더를 거쳐 인코더의 마지막 layer의 hidden state들과, decoder로 넘겨줄 마지막 hidden state를 저장한다.
 
-**\(28번 줄\)** 양방향 인코더의 마지막 hidden state는 $$(2\times layers,N,H)$$ 이므로 첫번째 차원을  세 번째 차원으로 concat해서 $$(layers,N,H)$$의 차원으로 통합해 준다. 이를 디코더의 첫 번째 hidden state로 넘긴다.
+**(28번 줄)** 양방향 인코더의 마지막 hidden state는 $$(2\times layers,N,H)$$ 이므로 첫번째 차원을  세 번째 차원으로 concat해서 $$(layers,N,H)$$의 차원으로 통합해 준다. 이를 디코더의 첫 번째 hidden state로 넘긴다.
 
-**\(32번 줄\)** 디코더의 첫 입력은 문장의 시작을 나타내야 하므로 항상 &lt;s&gt;이다.
+**(32번 줄)** 디코더의 첫 입력은 문장의 시작을 나타내야 하므로 항상 \<s>이다.
 
-**\(34번 줄\)** target 문장의 최대 길이까지 timestep을 반복한다.
+**(34번 줄)** target 문장의 최대 길이까지 timestep을 반복한다.
 
-**\(35-37번 줄\)** 디코더에 입력 후 출력을 가져온다. 출력된 hidden state는 다음 timestep으로 넘기기 위해 h\_dec에 다시 저장한다. 출력을 저장하고 최대 확률을 가지는 단어의 index를 argmax에 저장한다.
+**(35-37번 줄)** 디코더에 입력 후 출력을 가져온다. 출력된 hidden state는 다음 timestep으로 넘기기 위해 h\_dec에 다시 저장한다. 출력을 저장하고 최대 확률을 가지는 단어의 index를 argmax에 저장한다.
 
-**\(39-43번 줄\)** 교사 강요\(Teacher Forcing\)을 확률적으로 적용하기 위해 생성한 0~1 랜덤 수에 따라 진행한다. 만약 교사 강요를 할 경우, 다음 디코더 입력으로 정답 단어를 다음 입력으로 넘기고, 아닐 경우 현재 출력을 다음 입력으로 넘긴다.
-
+**(39-43번 줄) **교사 강요(Teacher Forcing)을 확률적으로 적용하기 위해 생성한 0\~1 랜덤 수에 따라 진행한다. 만약 교사 강요를 할 경우, 다음 디코더 입력으로 정답 단어를 다음 입력으로 넘기고, 아닐 경우 현재 출력을 다음 입력으로 넘긴다.

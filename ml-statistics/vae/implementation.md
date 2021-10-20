@@ -12,15 +12,15 @@ AEVB / SGVB를 적용한 Variational Autoencoder를 구현한다.
 
 ### Encoder
 
-| Layer | Params |
-| :--- | :--- |
-| Conv+ReLU | 1 -&gt; 32, size=3x3, stride=2, pad=1 |
-| Conv+ReLU | 32 -&gt; 64, size=3x3, stride=2, pad=1 |
-| Flatten |  |
-| Linear\(mean\) | 3136 -&gt; latent\_dim |
-| Linear\(logvar\) | 3136 -&gt; latent\_dim |
+| Layer          | Params                              |
+| -------------- | ----------------------------------- |
+| Conv+ReLU      | 1 -> 32, size=3x3, stride=2, pad=1  |
+| Conv+ReLU      | 32 -> 64, size=3x3, stride=2, pad=1 |
+| Flatten        |                                     |
+| Linear(mean)   | 3136 -> latent\_dim                 |
+| Linear(logvar) | 3136 -> latent\_dim                 |
 
-정규분포의 분산은 항상 양수인데, linear 레이어의 출력은 실수값이다. 실수 범위를 가지는 로그분산\( $$\log \sigma^2$$\)을 출력한 후 $$\sigma=\exp(\frac 1 2 \log\sigma^2)$$ 을계산한다. 정규분포를 가정한 네트워크이다.
+정규분포의 분산은 항상 양수인데, linear 레이어의 출력은 실수값이다. 실수 범위를 가지는 로그분산( $$\log \sigma^2$$)을 출력한 후 $$\sigma=\exp(\frac 1 2 \log\sigma^2)$$ 을계산한다. 정규분포를 가정한 네트워크이다.
 
 ### Sampling
 
@@ -30,15 +30,15 @@ AEVB / SGVB를 적용한 Variational Autoencoder를 구현한다.
 
 베르누이 분포를 가정한다. 출력이 0과 1 사이의 픽셀값이다.
 
-| Layer | Params |
-| :--- | :--- |
-| Linear+ReLU | latent\_dim -&gt; 3136 |
-| Reshape | \(3136,\) -&gt; \(64,7,7\) |
-| Deconv+ReLU | 64 -&gt; 64, size=3x3, stride=2 |
-| Deconv+ReLU | 64 -&gt; 32, size=3x3, stride=2 |
-| Conv | 32 -&gt; 1, size=4x4, stride=1 |
+| Layer       | Params                       |
+| ----------- | ---------------------------- |
+| Linear+ReLU | latent\_dim -> 3136          |
+| Reshape     | (3136,) -> (64,7,7)          |
+| Deconv+ReLU | 64 -> 64, size=3x3, stride=2 |
+| Deconv+ReLU | 64 -> 32, size=3x3, stride=2 |
+| Conv        | 32 -> 1, size=4x4, stride=1  |
 
-ConvTranspose2d로 차원\(28x28\)을 맟출 수 없었기에 최종적으로 Conv2d를 한번 더 해준다. 
+ConvTranspose2d로 차원(28x28)을 맟출 수 없었기에 최종적으로 Conv2d를 한번 더 해준다.&#x20;
 
 모델 클래스의 코드는 다음과 같다. 21/07/26 수정, 모델을 더 유연하게 변환했다.
 
@@ -117,18 +117,18 @@ class ConvVAE(nn.Module):
         return xhat,mean,logvar
 ```
 
-## Train 
+## Train&#x20;
 
 ### Prepare
 
 Hyperparameter, 데이터셋, 모델, optimizer를 다음과 같이 로드한다.
 
-| Param | Value |
-| :--- | :--- |
-| Batch Size | 100 |
-| Epochs | 50 |
+| Param          | Value        |
+| -------------- | ------------ |
+| Batch Size     | 100          |
+| Epochs         | 50           |
 | Optimizer / lr | Adam / 0.001 |
-| Z의 차원 | 2 또는 4 |
+| Z의 차원          | 2 또는 4       |
 
 ```python
 BATCH_SIZE=100
@@ -148,13 +148,13 @@ optim = torch.optim.Adam(model.parameters(),lr=1e-3)
 
 ### Loss Function
 
-Loss는 다음과 같이 정의한다.  미니배치의 크기가 100으로 충분히 크므로 L을 1로 해도 무관하다. 다음을 배치 하나 속의 데이터 포인트 100개에 대해 평균낸다\(Monte Carlo Estimation\).
+Loss는 다음과 같이 정의한다.  미니배치의 크기가 100으로 충분히 크므로 L을 1로 해도 무관하다. 다음을 배치 하나 속의 데이터 포인트 100개에 대해 평균낸다(Monte Carlo Estimation).
 
 $$
 -\tilde \mathcal L^M(\theta,\phi;\bold x^{(i)})=-\frac 1 2\sum^J_{j=1}\left(1 +\log((\sigma_j^{(i)})^2)  -(\mu_j^{(i)})^2-(\sigma_j^{(i)})^2   \right)-\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})
 $$
 
-$$-\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})$$ 는 Negative Log Likelihood이므로 크로스 엔트로피로 계산할 수 있고, 생성된 x에 대한 분포함수이다. z로부터 생성된 x가 데이터셋의 x일 확률을 계산한다. 디코더의 출력층에 이미 sigmoid를 적용해 확률값 0~1로 출력되므로, PyTorch에서 사용할 수 있는 loss는 BCELoss이다.
+$$-\log p_{\bm \theta}(\bold x^{(i)}|\bold z^{(i,l)})$$ 는 Negative Log Likelihood이므로 크로스 엔트로피로 계산할 수 있고, 생성된 x에 대한 분포함수이다. z로부터 생성된 x가 데이터셋의 x일 확률을 계산한다. 디코더의 출력층에 이미 sigmoid를 적용해 확률값 0\~1로 출력되므로, PyTorch에서 사용할 수 있는 loss는 BCELoss이다.
 
 코드로 나타내면
 
@@ -227,19 +227,19 @@ print(test_losses)
 
 잠재변수가 두 개의 실수일 때 결과이다.
 
-![Z\_DIM=2 loss ](../../.gitbook/assets/loss%20%281%29.png)
+![Z\_DIM=2 loss ](../../.gitbook/assets/loss.png)
 
 과적합 이전에 적절히 멈추었다.
 
 시각화 결과,
 
-![Z-DIM=2 &#xBD84;&#xC0B0;](../../.gitbook/assets/scatter.png)
+![Z-DIM=2 분산](../../.gitbook/assets/scatter.png)
 
 점이 0 주변에 올바르게 분포해 했으나, 일부 숫자는 잘 분리되지 않았다.
 
 100개를 Train Data에서 뽑아 적절히 생성했다. 결과, 다음과 같은 숫자가 생성되었다.
 
-![Z\_DIM=2 &#xC22B;&#xC790; &#xCD9C;&#xB825;](../../.gitbook/assets/image%20%281%29.png)
+![Z\_DIM=2 숫자 출력](<../../.gitbook/assets/image (4).png>)
 
 생성된 숫자가 애매하게 보이는 것이 많고, 압축  및 복원 과정에서 어려움이 있었다.
 
@@ -247,7 +247,7 @@ print(test_losses)
 
 잠재 변수가 4개의 실수일 때 결과이다.
 
-![Z\_DIM=4 loss](../../.gitbook/assets/loss.png)
+![Z\_DIM=4 loss](<../../.gitbook/assets/loss (1).png>)
 
 Z\_DIM=2에서보다 더 낮은  Loss를 보였다!
 
@@ -255,11 +255,9 @@ Z\_DIM=2에서보다 더 낮은  Loss를 보였다!
 
 ![](../../.gitbook/assets/TSNE.png)
 
-각 숫자가 더욱 잘 모여있는 것으로 보인다. 
+각 숫자가 더욱 잘 모여있는 것으로 보인다.&#x20;
 
-![Z\_DIM=4 &#xC22B;&#xC790; &#xCD9C;&#xB825;](../../.gitbook/assets/image.png)
+![Z\_DIM=4 숫자 출력](<../../.gitbook/assets/image (5).png>)
 
 생성된 이미지들은 실제로 더 또렷한 숫자들로 보였으며, 0부터 9까지 각각 또렷하게 보이는 숫자들이 적어도 하나씩 존재했다. 더 잘 최적화되었다.
-
-
 

@@ -4,7 +4,7 @@ description: PyTorch
 
 # Implementation - 구현
 
-전체 코드와 결과는 [여기](https://github.com/BengaleeHS/practice-ai-paper/tree/main/SRCNN%282015%29)에 저장되어 있다.
+전체 코드와 결과는 [여기](https://github.com/BengaleeHS/practice-ai-paper/tree/main/SRCNN\(2015\))에 저장되어 있다.
 
 ## Model
 
@@ -73,7 +73,7 @@ Test Dataset은 Set5 Dataset을 한 장씩 불러와, Scale Factor=3으로 Resiz
 
 ## Result
 
-**9-5-5, n1=64, n2=32**의 SRCNN \(3배율\)으로 91 Images에서 **batch size=16으로 100회** 학습했다.
+**9-5-5, n1=64, n2=32**의 SRCNN (3배율)으로 91 Images에서 **batch size=16으로 100회** 학습했다.
 
 첫 두 layer는 $$10^{-4}$$, 마지막 layer는 $$10^{-5}$$의 learning rate로 학습하며, 논문과는 다르게 **Adam Optimizer**를 사용한다.
 
@@ -81,15 +81,14 @@ Test Dataset은 Set5 Dataset을 한 장씩 불러와, Scale Factor=3으로 Resiz
 
 Set5의 이미지 중 하나를 실행해 보았다. Bicubic에 비해 다른 부분 사이의 경계가 더욱 sharp해진 것을 확인할 수 있다. 원본 논문에서도, Edge detection에 해당하는 filter가 나타났다고 한다.
 
-![Original Image](../.gitbook/assets/0_tar.png)
+![Original Image](../.gitbook/assets/0\_tar.png)
 
-![Bicubic x3](../.gitbook/assets/0_bic.png)
+![Bicubic x3](../.gitbook/assets/0\_bic.png)
 
-![SRCNN\(9-5-5\) x3](../.gitbook/assets/0_out%20%283%29.png)
+![SRCNN(9-5-5) x3](<../.gitbook/assets/0\_out (2).png>)
 
-MSE loss와 PSNR은 구현 결과다음과 같이 보여진다. Bicubic\(29.21 dB\)보다 높은 PSNR을 보인다. 최고 PSNR은 **30.25 dB**이다.
+MSE loss와 PSNR은 구현 결과다음과 같이 보여진다. Bicubic(29.21 dB)보다 높은 PSNR을 보인다. 최고 PSNR은 **30.25 dB**이다.
 
-![loss](../.gitbook/assets/losses.png)
+![loss](<../.gitbook/assets/losses (1).png>)
 
 ![PSNR](../.gitbook/assets/psnr.png)
-

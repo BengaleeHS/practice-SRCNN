@@ -467,8 +467,11 @@ Replay Buffer의 영향으로 Discriminator의 변동폭이 크지 않았고 안
 
 ## 배운 점
 
+CycleGAN의 아이디어인 변환-역변환, 논문의 이론적 접근과 더불어,&#x20;
+
 * Learning Rate Scheduling를 원하는 함수로 사용하는 테크닉
-* Receptive Field 크기의 계산법
+* 모델-옵티마이저-스케줄러의 단일 클래스화 테크닉
+* Receptive Field 크기의 계산
 * Residual Block 및 Replay Buffer의 기본 메커니즘 및 구현
 * Layer / Instance / Batch Normalization의 차이점
 * Discriminator의 파라미터 부족과 전역성에에 따른 학습 불안정, 및 해결법(PatchGAN, Replay Buffer)&#x20;

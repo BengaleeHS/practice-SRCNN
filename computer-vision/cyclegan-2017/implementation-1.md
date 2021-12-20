@@ -4,7 +4,7 @@ description: PyTorch
 
 # 구현해보기
 
-## 개요 &#x20;
+## 구성 &#x20;
 
 전체적인 구현을 위해 CycleGAN 원 논문의 코드를 참고하였다([https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)). 여기서는 여름 풍경사진과 겨울 풍경사진을 상호 변환하는 작업에 대해 학습하였다.
 
@@ -57,7 +57,7 @@ class DualDataset(Dataset):
 
 #### Generator
 
-&#x20;Convolution,LayerNorm, ReLU를 순서대로 거쳐 축소하고 Residual Block을 9번 거친 후, Transposed Convolution으로 확대한다.  &#x20;
+&#x20;Convolution,LayerNorm, ReLU를 순서대로 거쳐 축소하고 Residual Block을 9번 거친 후, Transposed Convolution으로 확대한다.
 
 ```python
 class Generator(nn.Module):
@@ -311,3 +311,164 @@ class CycleGAN(nn.Module):
 **23번 줄.** lr decay를 위한 람다 함수를 정의했으며 train시 update\_lr을 실행함으로써 lr을 업데이트한다.  &#x20;
 
 **44번 줄.** Generator과 Discriminator가 별도로 학습되므로 두 개의 옵티마이저가 필요하다. 따라서 backward 메서드 대신 두 모델을 동시에 backward propagation하는 optimize 메서드를 작성했다.
+
+### Train
+
+Batch Size는 10개이며 Epoch 수는 200이다. CycleGAN Discriminator 버퍼 크기는 400개이며 학습률은 0.0002이다. 다만 100epoch 이후에는 1epoch당 0.955씩 곱해 decay한다(최종적으로 0.01이 곱해진다). lr scheduling 함수는 앞의 CycleGAN 클래스의 23번 줄에 정의되어있다.
+
+```python
+import torch
+import numpy as np
+from torchvision.transforms.transforms import Resize 
+from model import CycleGAN
+from dataset import build_dualdataloader
+from torchvision import transforms
+
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+# hyperparams
+BATCH_SIZE = 10
+START_EPOCH = 1
+DECAY_EPOCH =100
+RECORD_FREQ = 100
+
+tr = transforms.Compose([ transforms.ToTensor(),transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+
+if __name__ == '__main__':
+    print(DEVICE)
+    train_dataloader = build_dualdataloader(BATCH_SIZE, './archive/trainA', './archive/trainB', maxsize=1000,transform=tr)
+    test_dataloader = build_dualdataloader(BATCH_SIZE, './archive/testA', './archive/testB', maxsize=100,transform=tr)
+
+    model = CycleGAN(3,learning_rate=0.0002,start_epoch=START_EPOCH, decay_epoch=DECAY_EPOCH,buffer_size=400,res_depth=9)
+    model.to(DEVICE)
+    
+    # Training Status 
+    backprops = 0
+    losses_G = []
+    losses_D = []
+    
+    # Restore
+    if START_EPOCH>1:
+        # load before model params
+        model.load_state_dict(torch.load(f'./checkpoints/epoch{START_EPOCH-1}.pt'))
+        losses_G = np.load('./G_history.npy').tolist()
+        losses_D = np.load('./D_history.npy').tolist()
+        print(len(np.load('./G_history.npy').tolist()))
+        backprops = np.load('./vars.npy').tolist()[0]
+        # backprops = 1000*30
+        print(f'Continue from epoch={START_EPOCH}, backprops={backprops}, history_len={len(losses_D)},{len(losses_D)}')
+        
+    for epoch in range(START_EPOCH, 2*DECAY_EPOCH+1):
+        model.train()
+        print(f'\nEpoch {epoch}')
+        for idx, (rA, rB) in enumerate(train_dataloader):
+            
+            model.forward(rA,rB)
+            loss_G, loss_D = model.optimize()
+            
+            
+            if backprops % RECORD_FREQ == 0:
+                print(f"Iter={backprops} / loss_G={loss_G.item()}, loss_D={loss_D.item()}")
+                losses_G.append(loss_G.item())
+                losses_D.append(loss_D.item())
+            backprops+=1
+
+        model.update_lr()
+        torch.save(model.state_dict(),f'./checkpoints/epoch{epoch}.pt')
+        np.save('./G_history',np.array(losses_G))
+        np.save('./D_history',np.array(losses_D))
+        np.save('./vars',np.array([backprops]))
+```
+
+### Test
+
+asdf
+
+```python
+import torch
+import numpy as np 
+from model import CycleGAN
+from dataset import build_dualdataloader
+from torchvision import transforms
+from PIL import Image
+
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+tr = transforms.Compose([ transforms.ToTensor(),transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+topil = transforms.Compose([transforms.Lambda(lambda x : x*0.5+0.5),transforms.ToPILImage()])
+
+LOAD_EPOCH=200
+
+if __name__ == '__main__':
+    print(DEVICE)
+    
+    test_dataloader = build_dualdataloader(1, './archive/testA', './archive/testB', maxsize=100,transform=tr)
+
+    model = CycleGAN(3,learning_rate=0.0002,buffer_size=400,res_depth=9,train=False)
+    model.to(DEVICE)
+    
+    
+    # load before model params
+    model.load_state_dict(torch.load(f'./checkpoints_large/epoch{LOAD_EPOCH}.pt'))
+    print(f'Load epoch={LOAD_EPOCH}')
+        
+    model.eval()
+
+    for idx, (rA, rB) in enumerate(test_dataloader):
+        
+        model.forward(rA,rB)
+        if idx %10 ==0 :
+            print(f"{idx} th image")
+        
+        fake_A =  topil(model.fA.squeeze(0).to('cpu'))
+        fake_B = topil(model.fB.squeeze(0).to('cpu'))
+        real_A= topil(rA.squeeze(0).to('cpu'))
+        real_B= topil(rB.squeeze(0).to('cpu'))
+
+        fake_A.save(f'./results/BtoA_{idx}.jpg')
+        fake_B.save(f'./results/AtoB_{idx}.jpg')
+        real_A.save(f'./results/AtoB_{idx}_org.jpg')
+        real_B.save(f'./results/BtoA_{idx}_org.jpg')
+```
+
+## 학습 결과
+
+### Learning Curve
+
+![](../../.gitbook/assets/Figure\_large.png)
+
+Replay Buffer의 영향으로 Discriminator의 변동폭이 크지 않았고 안정적으로 학습할 수 있었다. 논문 저자가 테스트한 loss값과 유사한 값(Gen: 3.x, Dis: 0.3) 이 나왔다.
+
+### Image Translation
+
+200epoch의 파라미터를 사용해 추론했다. 학습에 사용되지 않은 Test Dataset 100장 이미지를 상호 변환했다. &#x20;
+
+### Summer to Winter
+
+![좋은 예시](<../../.gitbook/assets/image (35).png>)
+
+![좋은 예시](<../../.gitbook/assets/image (33).png>)
+
+&#x20;오른쪽이 원본 여름 이미지이고 왼쪽이 겨울로 변환한 이미지이다. 겨울의 나무와 잎에 눈이 쌓인다는 특성, 남중고도가 전체적으로 낮아 비교적 어둡다는 특성을 학습했다는것을 알 수 있다.
+
+![좋지 않은 예시](<../../.gitbook/assets/image (32).png>)
+
+&#x20;다만, 푸른 하늘의 특성은 여름-겨울이 크게다르지않다. 전체적으로 색을 반전해버리는 경향이 있어 하늘이 많이 포함된 경우 하늘이 제대로 표현되지않는다. 이 경우는 논문에 나온 Identity loss를 사용해 색을 보존해야 한다.
+
+### Winter to Summer
+
+변환 특성은 여름에서 겨울로 변환하는 것과 유사하다. 눈을 지우고 초록색을 여름답게 더 푸르게 바꾸는 경향이 있으나  &#x20;
+
+![](<../../.gitbook/assets/image (30).png>)
+
+항상 푸른 하늘의 특성을 잘 반영하지 못하고 반전시킨다는 오류가 있다.  &#x20;
+
+![](<../../.gitbook/assets/image (31).png>)
+
+## 배운 점
+
+* Learning Rate Scheduling를 원하는 함수로 사용하는 테크닉
+* Receptive Field 크기의 계산법
+* Residual Block 및 Replay Buffer의 기본 메커니즘 및 구현
+* Layer / Instance / Batch Normalization의 차이점
+* Discriminator의 파라미터 부족과 전역성에에 따른 학습 불안정, 및 해결법(PatchGAN, Replay Buffer)&#x20;

@@ -6,13 +6,13 @@ description: PyTorch
 
 ## 구성 &#x20;
 
-전체적인 구현을 위해 CycleGAN 원 논문의 코드를 참고하였다([https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)). 여기서는 여름 풍경사진과 겨울 풍경사진을 상호 변환하는 작업에 대해 학습하였다.
+전체적인 구현을 위해[ CycleGAN 원 논문의 코드](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)를 참고하였다. 여기서는 여름 풍경사진과 겨울 풍경사진을 상호 변환하는 작업에 대해 학습하였다.
 
 ### Dataset
 
 [Yosemite Winter-Summer](https://www.kaggle.com/balraj98/summer2winter-yosemite) 데이터셋을 사용해 여름 풍경사진과 겨울 풍경사진 간 변환한다.
 
-다음 코드는 여름-겨울 페어를 제공하는 데이터셋 클래스이다 .
+다음 코드는 여름-겨울 페어를 공급하는 데이터셋 클래스이다 .
 
 ```python
 class DualDataset(Dataset):

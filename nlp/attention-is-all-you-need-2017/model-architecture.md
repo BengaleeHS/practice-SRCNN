@@ -14,11 +14,11 @@ N x는 위의 블럭 구조가 N번 반복됨을 의미한다. 지금부터 위 
 
 ### Encoder
 
-인코더는 두 개의 서브 블록으로 구성된다. Multi-Head Self-Attention 블럭과, Fully Connected Net 블럭이 하나 존재한다. 그림에서 볼 수 있듯이 Residual connection이 있어서 각 블럭의 출력과 입력을 더해 Normalize한다. 이러한 블럭은  $$N=6$$ 개 반복되어 이어져 있다. Residual을 사용하려면 차원이 맞아야 하므로, 입력과 출력 벡터 모두 $$d_{model}=512$$차원의 벡터이다.
+인코더는 두 개의 서브 블록으로 구성된다. Multi-Head Self-Attention 블럭과, Fully Connected Net 블럭이 하나 존재한다. 그림에서 볼 수 있듯이 Residual connection이 있어서 각 블럭의 출력과 입력을 더해 Normalize한다. 이러한 블럭은 $$N=6$$ 개 반복되어 이어져 있다. Residual을 사용하려면 차원이 맞아야 하므로, 입력과 출력 벡터 모두 $$d_{model}=512$$차원의 벡터이다.
 
 ### Decoder
 
-디코더는 세 개의 서브 블록으로 구성된다. (Masked) Multi-Head Self Attention 블럭과 Fully Connected Net 블럭이 있는 것은 인코더와 비슷하지만, 중간에 인코더의 최종 출력과 Attention Mechanism을 실행하기 위한 Multi-Head Self Attention 블럭이 하나 더 존재한다. 인코더처럼 Residual connection이 있고 $$N=6$$ 번 반복된다.&#x20;
+디코더는 세 개의 서브 블록으로 구성된다. (Masked) Multi-Head Self Attention 블럭과 Fully Connected Net 블럭이 있는 것은 인코더와 비슷하지만, 중간에 인코더의 최종 출력과 Attention Mechanism을 실행하기 위한 Multi-Head Self Attention 블럭이 하나 더 존재한다. 인코더처럼 Residual connection이 있고 $$N=6$$ 번 반복된다.
 
 {% hint style="info" %}
 **Masked** Multi-Head Self Attention의 Masked의 의미는 문장을 생성할 때 지금까지 생성한 단어들 사이에서만 Attention을 실행하기 위해 특정 시점 이후의 단어를 Mask한다는 뜻이다. 지금까지의 출력 단어로 그 다음 단어를 추론해야 하기 때문이다.
@@ -40,7 +40,7 @@ N x는 위의 블럭 구조가 N번 반복됨을 의미한다. 지금부터 위 
 |  가위 |  1000 |
 |  자  |  750  |
 
-&#x20;사용할 query 값은 '볼펜' 이다. 유사도 값이 다음과 같이 계산되었다고 한다.
+사용할 query 값은 '볼펜' 이다. 유사도 값이 다음과 같이 계산되었다고 한다.
 
 | Key | 유사도 |
 | :-: | :-: |
@@ -63,7 +63,7 @@ softmax를 취해, value에 곱하고 총 합을 낸다.
 
 최종 어텐션 값(추정된 볼펜 가격)은 1866이다. 볼펜과 다른 문구(연필, 샤프 등)와의 유사도를 바탕으로 문구의 가격을 반영해 볼펜의 가격을 정한다. 문구-가격 쌍에서 볼펜의 가격을 추출하려는 노력이다.
 
-이것은 Seq2Seq에서 사용했던 Attention Mechanism과 거의 동일하다. Attention은 이 예시와 같이, **query 벡터를 이용해 key-value쌍에서 query와 연관된 특징에 집중해 추출하는 메커니즘이다. **
+이것은 Seq2Seq에서 사용했던 Attention Mechanism과 거의 동일하다. Attention은 이 예시와 같이, **query 벡터를 이용해 key-value쌍에서 query와 연관된 특징에 집중해 추출하는 메커니즘이다.**
 
 ### Scaled Dot-Product Attention
 
@@ -78,8 +78,8 @@ $$
 자주 사용되는 Attention 종류는 Additive와 Dot-Product가 있는데, Additive는 단일 레이어 FCN와 같다. 공간적 측면에서 Dot이 더 효율적이기 때문에 연구진들은 Dot-Product Attention을 채택했다고 한다.
 
 {% hint style="info" %}
-**왜 **$$d_k$$**가 아니라 **$$\sqrt{d_k}$$**로 나눌까?**\
-평균이 0이고 분산이 1이고 벡터의 각 요소가 모두 독립인 d차원 벡터 a와 b가 있다고 하자. dot product는 $$a\cdot b = \sum_{i=1}^{d} a_i b_i$$이다.&#x20;
+**왜** $$d_k$$**가 아니라** $$\sqrt{d_k}$$**로 나눌까?**\
+평균이 0이고 분산 이 1이고 벡터의 각 요소가 모두 독립인 d차원 벡터 a와 b가 있다고 하자. dot product는 $$a\cdot b = \sum_{i=1}^{d} a_i b_i$$이다.
 
 서로 독립인 RV $$X, Y$$에 대해 $$\mathbb E[X+Y]=\mathbb E[X]+\mathbb E[Y]=0$$ 이고 $$\mathrm{Var}(X+Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)+2\cdot \mathrm{Cov}(X,Y)=\mathrm{Var}(X)+\mathrm{Var}(Y)=2$$\
 이다. 변수들 간 모두 독립이라고 가정하므로 공분산이 0이기 때문에 차원의 수 만큼 분산이 커진다. 따라서 표준편차인 $$\sqrt{d_k}$$로 scale한다.
@@ -99,16 +99,14 @@ $$
 \mathrm{MultiHeadAtt}(Q,K,V)=\mathrm{Concat(head_1,head_2, \cdots,head_{\mathit h})}W^O
 $$
 
-보통 $$h=8$$ 을 사용해 8개의 각기 다른 Attention을 수행한다. 다만 여기서 $$d_{model}=512$$를 그대로 Attention하면 연산량이 8배로 늘어나므로, 연산량을 유지하기 위해  $$W^Q, W^K, W^V$$는 $$512\times64$$차원의 실수행렬이다( $$d_v=512/8=64$$ ). 이렇게 하면 Attention을 64차원에서 실행하므로, head가 8개가 되어도 연산량은 크게 늘어나지 않고 Linear 블럭의 연산만 추가된다. 마지막 $$W^O$$는 각 head를 통합하기 위해 $$hd_v\times d_{model} = 512\times 512$$ 크기의 행렬을 사용한다. Multi-Head 과정은 고차원 텐서곱이므로 병렬 최적화 가능하다!
+보통 $$h=8$$ 을 사용해 8개의 각기 다른 Attention을 수행한다. 다만 여기서 $$d_{model}=512$$를 그대로 Attention하면 연산량이 8배로 늘어나므로, 연산량을 유지하기 위해 $$W^Q, W^K, W^V$$는 $$512\times64$$차원의 실수행렬이다( $$d_v=512/8=64$$ ). 이렇게 하면 Attention을 64차원에서 실행하므로, head가 8개가 되어도 연산량은 크게 늘어나지 않고 Linear 블럭의 연산만 추가된다. 마지막 $$W^O$$는 각 head를 통합하기 위해 $$hd_v\times d_{model} = 512\times 512$$ 크기의 행렬을 사용한다. Multi-Head 과정은 고차원 텐서곱이므로 병렬 최적화 가능하다!
 
 ### Applications in Transformer
 
 Transformer에선 이 Multi-Head Attention을 다양한 부분에서 활용한다.
 
-1. **인코더-디코더 Attention. **Q값은 이전 디코더 layer의 출력, K와 V값은 인코더의 출력이다. 디코더 출력을 이용해 인코더에 Attention하는 Seq2Seq의 기본적 Attention과 같은 메커니즘이다.\
-
-2. **인코더 Self-Attention.** Q,K,V 모두 이전 인코더 layer의 출력이다. 이것은 다음 인코더가 이전 인코더의 모든 값에 관여하기 위함이다.\
-
+1. **인코더-디코더 Attention**.  Q값은 이전 디코더 layer의 출력, K와 V값은 인코더의 출력이다. 디코더 출력을 이용해 인코더에 Attention하는 Seq2Seq의 기본적 Attention과 같은 메커니즘이다.
+2. **인코더 Self-Attention.** Q,K,V 모두 이전 인코더 layer의 출력이다. 이것은 다음 인코더가 이전 인코더의 모든 값에 관여하기 위함이다.
 3. **디코더 Self-Attention.** Q,K,V 모두 이전 디코더 layer의 출력이다. 인코더와 동일하지만, **masking 과정**이 추가되어 있다. 디코더는 이전에 생성한 단어들을 이용해 현 시점의 단어를 출력하므로(Auto-regressive) 앞으로 나올 위치에서 Attention이 동작해선 안된다. 따라서 뒤쪽 위치를 softmax 전에 $$-\infty$$로 바꾼다. softmax를 취하면 0이 되기 때문이다.
 
 ## Position-wise Feed-Forward Networks
@@ -119,7 +117,7 @@ $$
 \mathrm{FFN}(x)=\mathrm{ReLU}(xW_1+b_1)W_2+b_2
 $$
 
-입/출력차원은 $$d_{model}=512$$이고 은닉층의 차원은 $$d_{ff}=2048$$이다. \
+입/출력차원은 $$d_{model}=512$$이고 은닉층의 차원은 $$d_{ff}=2048$$이다.\
 즉 $$W_1\in\mathbb R^{512\times 2048}, W_2\in\mathbb R^{2048\times 512}$$이다.
 
 ## Embeddings & Softmax
@@ -152,13 +150,12 @@ $$
 2\. position의 상대적인 위치를 학습할 수 있을 여지가 있기 때문이다. 이를 논문에선, $$PE_{pos}$$ 와 $$PE_{pos+k}$$ 사이의 관계는 고정된 offset에 대한 선형 변환으로 나타낼 수 있기 때문이라고 설명한다.
 
 {% hint style="success" %}
-Positional Encoding을 다음과 같이  간단히 표현하면 이것이 가능함을 알 수 있다.$$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$\
+Positional Encoding을 다음과 같이 간단히 표현하면 이것이 가능함을 알 수 있다.$$\begin{bmatrix} \sin(x+k) \\ \cos(x+k) \end{bmatrix}=\begin{bmatrix}\cos(k) & \sin(k) \\ -\sin(k) & \cos(k) \end{bmatrix}\begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix}$$\
 토큰 위치(x)가 아닌 위치 사이의 거리(k)만으로 표현된 단순한 연산으로 positional encoding의 위치 관계를 표현할 수 있다. 이는 문장의 절대적 위치 뿐만 아니라 상대적 위치를 학습할 수 있다는 것을 의미한다.
 {% endhint %}
 
-**참고자료 **: [https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/](https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/)
+**참고자료** : [https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/](https://kazemnejad.com/blog/transformer\_architecture\_positional\_encoding/)
 
 **참고 :** $$d_{model}=64$$ 일때 토큰 위치에 따른 positional encoding vector 값은 다음 히트맵과 같다.
 
 ![Source : https://jalammar.github.io/illustrated-transformer/](<../../.gitbook/assets/image (10).png>)
-

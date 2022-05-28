@@ -113,10 +113,10 @@ noise를 추가한 뒤 clamp한다. x는 깨끗한 이미지, y는 noisy 이미�
 
 ## Result
 
-CImageNet400을 grayscale로 변환한 이미지를 crop해 Train data로 사용하고 BSD68을 Test data로 사용한다.&#x20;
+CImageNet400을 grayscale로 변환한 이미지를 crop해 Train data로 사용하고 BSD68을 Test data로 사용한다.
 
-Batch size는 128, 총 배치 수는 1600개이며 50 epoch 학습한다. \
-Optimizer는 Adam이고** learning rate를 1e-3으로 하되, 30epoch에서 1e-4로** 스케줄링한다.
+Batch size는 128, 총 배치 수는 1600개이며 50 epoch 학습한다.\
+Optimizer는 Adam이고\*\* learning rate를 1e-3으로 하되, 30epoch에서 1e-4로\*\* 스케줄링한다.
 
 ![PSNR](<../../.gitbook/assets/avg\_psnr (2).png>)
 
@@ -124,10 +124,10 @@ Test Data에 대한 epoch에 따른 평균 PSNR의 곡선은 위와 같이 나�
 
 추가적으로, SSIM을 평가 지표로 사용했다.
 
-복원된 이미지 예시이다.&#x20;
+복원된 이미지 예시이다.
 
 ![원본 이미지](../../.gitbook/assets/49\_org.png)
 
 ![노이즈 추가 후 복원한 이미지](<../../.gitbook/assets/49\_out (1).png>)
 
-DnCNN의 출력 이미지를 보면, 분명 노이즈를 제거하나 이미지 본래의 자글자글한 부분의 패턴이 사라진다. 나무의 풀잎, 모래 부분을 보면 내부의 무늬가 감소함을 알 수 있다.** MSE loss는 이미지 전체에 대해 오차를 평균내므로 '평균적으로' loss가 작으면 그만이다. 따라서 인간의 시각적 인식을 그대로 반영하지 않기 때문에, **loss function에 SSIM 항을 추가하는 방법도 존재한다.
+DnCNN의 출력 이미지를 보면, 분명 노이즈를 제거하나 이미지 본래의 자글자글한 부분의 패턴이 사라진다. 나무의 풀잎, 모래 부분을 보면 내부의 무늬가 감소함을 알 수 있다. **MSE loss는 이미지 전체에 대해 오차를 평균내므로 '평균적으로' loss가 작으면 그만이다**. 따라서 인간의 시각적 인식을 그대로 반영하지 않기 때문에, loss function에 SSIM 항을 추가하는 방법도 존재한다.
